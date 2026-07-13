@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   ArrowLeft,
   Save,
@@ -10,6 +11,7 @@ import {
   ChevronRight,
   Sun,
   Moon,
+  BarChart3,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -24,6 +26,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useRef } from "react";
 import { importSpaceFromJson } from "@/lib/import";
 import { DEFAULT_PROJECT_CONFIG } from "@/lib/constants";
+import { AnalyticsModal } from "@/components/game/AnalyticsModal";
 
 export function ContextHeader() {
   const router = useRouter();
@@ -37,6 +40,7 @@ export function ContextHeader() {
   const save = useSimulationStore((s) => s.saveSpace);
   const dirty = useSimulationStore((s) => s.dirty);
   const saving = useSimulationStore((s) => s.saving);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   const client = clients.find((c) => c.id === activeClientId);
   const project = projects.find((p) => p.id === activeProjectId);
@@ -160,6 +164,17 @@ export function ContextHeader() {
             <Download className="h-4 w-4" />
           </Button>
         </Tooltip>
+        <Tooltip content="Analíticas">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setAnalyticsOpen(true)}
+            aria-label="Analíticas"
+            className="h-8 w-8"
+          >
+            <BarChart3 className="h-4 w-4" />
+          </Button>
+        </Tooltip>
         <Tooltip content={theme === "dark" ? "Modo claro" : "Modo oscuro"}>
           <Button
             variant="ghost"
@@ -183,6 +198,7 @@ export function ContextHeader() {
           {saving ? "Guardando..." : "Guardar"}
         </Button>
       </div>
+      <AnalyticsModal open={analyticsOpen} onOpenChange={setAnalyticsOpen} />
     </header>
   );
 }

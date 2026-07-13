@@ -49,7 +49,6 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { TIER_CONFIGS } from "@/lib/types";
 import type { ClientTier, TierConfig, MowerTier } from "@/lib/types";
 import { TelemetryModal } from "@/components/game/TelemetryModal";
-import { AnalyticsCard } from "@/components/game/AnalyticsCard";
 
 declare global {
   interface WindowEventMap {
@@ -1019,8 +1018,6 @@ export function Sidebar() {
               </Card>
             );
           })()}
-
-          <AnalyticsCard />
 
           <Card>
             <CardHeader className="p-2.5 pb-1.5">
