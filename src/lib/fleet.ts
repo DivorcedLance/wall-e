@@ -74,6 +74,7 @@ function floodFillReachable(
   startX: number, startY: number,
   targetTiles: Set<string>,
   cells: Map<string, CellData>, width: number, height: number,
+  tileOwner?: Map<string, string>, ownerId?: string,
 ): Set<string> {
   const visited = new Set<string>();
   const stack = [{ x: startX, y: startY }];
@@ -84,6 +85,11 @@ function floodFillReachable(
     if (!targetTiles.has(key)) {
       const cell = cells.get(key);
       if (!cell || !WALKABLE.has(cell.type)) continue;
+      // If tileOwner provided, exclude tiles owned by OTHER mowers
+      if (tileOwner && ownerId) {
+        const owner = tileOwner.get(key);
+        if (owner && owner !== ownerId) continue;
+      }
     }
     visited.add(key);
     if (x > 0) stack.push({ x: x - 1, y });
@@ -160,27 +166,65 @@ export function computeCoverageTours(
     stationDistances.set(m.id, bfsFromStation(st.x, st.y, grassSet, cells, width, height));
   }
 
-  // ── Step 2: Simple Voronoi — nearest reachable station ─────────────────
-  // NO isolation penalty — just pure shortest path distance
+  // ── Step 2: Flood-fill Voronoi — assign tiles in BFS waves from each station
+  // Only traverses unassigned tiles → guarantees each zone is connected from start
   const buckets: Map<string, Array<{ x: number; y: number }>> = new Map();
   for (const m of mowers) buckets.set(m.id, []);
 
-  for (const tile of grassTiles) {
-    const tileKey = `${tile.x},${tile.y}`;
-    let bestId = mowers[0].id;
-    let bestDist = Infinity;
-    for (const m of mowers) {
-      const dists = stationDistances.get(m.id);
-      const d = dists?.get(tileKey) ?? Infinity;
-      if (d < bestDist) { bestDist = d; bestId = m.id; }
+  const assigned = new Set<string>();
+  const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+  let totalAssigned = 0;
+  const totalGrass = grassTiles.length;
+
+  // Initialize BFS queues from each station
+  const queues: Array<Array<{ x: number; y: number }>> = [];
+  for (const m of mowers) {
+    const st = stationMap.get(m.id);
+    if (!st) { queues.push([]); continue; }
+    queues.push([{ x: st.x, y: st.y }]);
+  }
+
+  // Round-robin BFS waves — each station claims adjacent unassigned grass tiles
+  let maxWaves = 0;
+  while (totalAssigned < totalGrass && maxWaves < width + height) {
+    let anyProgress = false;
+    for (let mi = 0; mi < mowers.length; mi++) {
+      if (totalAssigned >= totalGrass) break;
+      const queue = queues[mi];
+      if (queue.length === 0) continue;
+
+      const nextQueue: Array<{ x: number; y: number }> = [];
+      const visitedThisWave = new Set<string>();
+      for (const { x, y } of queue) {
+        for (const [dx, dy] of dirs) {
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+          const nk = `${nx},${ny}`;
+          if (assigned.has(nk) || visitedThisWave.has(nk)) continue;
+          const cell = cells.get(nk);
+          if (!cell || !WALKABLE.has(cell.type)) continue;
+          visitedThisWave.add(nk);
+          // Claim grass tiles that need mowing
+          if (cell.type === "grass" && (cell.grassHeight ?? 0) >= mowThreshold) {
+            assigned.add(nk);
+            buckets.get(mowers[mi].id)!.push({ x: nx, y: ny });
+            totalAssigned++;
+            anyProgress = true;
+          }
+          // Continue BFS through all walkable tiles
+          nextQueue.push({ x: nx, y: ny });
+        }
+      }
+      queues[mi] = nextQueue;
     }
-    buckets.get(bestId)!.push(tile);
+    if (!anyProgress) break; // no more grass tiles reachable
+    maxWaves++;
   }
 
   // ── Step 3: Rebalance — move boundary tiles, ALWAYS maintain connectivity ──
   if (mowers.length > 1) {
     const avgTiles = Math.ceil(grassTiles.length / mowers.length);
-    const maxTiles = Math.floor(avgTiles * 1.5);
+    const maxTiles = Math.floor(avgTiles * 1.2);
 
     const tileOwner = new Map<string, string>();
     for (const m of mowers) {
@@ -188,19 +232,26 @@ export function computeCoverageTours(
     }
 
     /** Check if removing a tile from a bucket keeps the remaining tiles connected to station. */
-    function canRemoveTile(bucket: Array<{ x: number; y: number }>, tile: { x: number; y: number }, station: { x: number; y: number }): boolean {
+    function canRemoveTile(bucket: Array<{ x: number; y: number }>, tile: { x: number; y: number }, station: { x: number; y: number }, ownerId: string): boolean {
       if (bucket.length <= 1) return false; // can't remove last tile
       const remaining = bucket.filter((t) => t.x !== tile.x || t.y !== tile.y);
       const tileSet = new Set(remaining.map((t) => `${t.x},${t.y}`));
       tileSet.add(`${station.x},${station.y}`);
-      const reachable = floodFillReachable(station.x, station.y, tileSet, cells, width, height);
+      const reachable = floodFillReachable(station.x, station.y, tileSet, cells, width, height, tileOwner, ownerId);
       return remaining.every((t) => reachable.has(`${t.x},${t.y}`));
     }
 
-    /** Check if adding a tile to a bucket keeps it connected (tile must be adjacent to existing). */
-    function canAddTile(bucket: Array<{ x: number; y: number }>, tile: { x: number; y: number }): boolean {
+    /** Check if adding a tile to a bucket keeps it connected AND reachable from station. */
+    function canAddTile(bucket: Array<{ x: number; y: number }>, tile: { x: number; y: number }, station: { x: number; y: number }, ownerId: string): boolean {
       const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
-      return dirs.some(([dx, dy]) => bucket.some((t) => t.x === tile.x + dx && t.y === tile.y + dy));
+      const hasAdj = dirs.some(([dx, dy]) => bucket.some((t) => t.x === tile.x + dx && t.y === tile.y + dy));
+      if (!hasAdj) return false;
+      // Full connectivity: all tiles must be reachable from station through walkable terrain
+      const candidate = [...bucket, tile];
+      const candidateSet = new Set(candidate.map((t) => `${t.x},${t.y}`));
+      candidateSet.add(`${station.x},${station.y}`);
+      const reachable = floodFillReachable(station.x, station.y, candidateSet, cells, width, height, tileOwner, ownerId);
+      return candidate.every((t) => reachable.has(`${t.x},${t.y}`));
     }
 
     let rebalanced = true, iterations = 0;
@@ -243,8 +294,9 @@ export function computeCoverageTours(
 
           // CRITICAL: check connectivity on BOTH sides
           const otherBucket = buckets.get(bestOtherId)!;
-          if (!canRemoveTile(bucket, tile, st)) continue; // would disconnect source zone
-          if (!canAddTile(otherBucket, tile)) continue; // would create island in target zone
+          if (!canRemoveTile(bucket, tile, st, m.id)) continue; // would disconnect source zone
+          const otherSt = stationMap.get(bestOtherId)!;
+          if (!canAddTile(otherBucket, tile, otherSt, bestOtherId)) continue; // would create island in target zone
 
           const idx = bucket.findIndex((t) => t.x === tile.x && t.y === tile.y);
           if (idx >= 0) bucket.splice(idx, 1);

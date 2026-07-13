@@ -344,6 +344,8 @@ export class IsometricScene extends Phaser.Scene {
     const g = this.mapGraphics;
     g.clear();
     const showGrid = useEditorStore.getState().showGrid;
+    const zoom = this.cameras.main.zoom;
+    const lodLevel = zoom < 0.5 ? 2 : zoom < 0.8 ? 1 : 0;
     for (let y = 0; y < sim.space.height; y++) {
       for (let x = 0; x < sim.space.width; x++) {
         const cell = sim.cells.get(`${x},${y}`);
@@ -360,8 +362,10 @@ export class IsometricScene extends Phaser.Scene {
           g.lineTo(cx - TILE_WIDTH / 2, cy);
           g.closePath();
           g.fillPath();
-          g.lineStyle(1, 0x1e293b, 0.5);
-          g.strokePath();
+          if (lodLevel < 2) {
+            g.lineStyle(1, 0x1e293b, 0.5);
+            g.strokePath();
+          }
           continue;
         }
         let fill: number;
@@ -371,8 +375,11 @@ export class IsometricScene extends Phaser.Scene {
           fill = COLOR_MAP[cell.type];
         }
         this.drawTile(g, cx, cy, fill);
+        // LOD: skip textures at low zoom
+        if (lodLevel >= 2) continue;
         // Texture / accent for certain types
         if (cell.type === "grass" && (cell.grassHeight ?? 0) > 0) {
+          if (lodLevel >= 1) continue;
           const accent = grassColorForHeight(cell.grassHeight ?? 0).accent;
           g.fillStyle(accent, 0.25);
           const hw = TILE_WIDTH / 2 - 8;
@@ -660,6 +667,23 @@ export class IsometricScene extends Phaser.Scene {
       indicator.strokeCircle(0, 0, 16);
       indicator.lineStyle(1, 0xfbbf24, 0.35);
       indicator.strokeCircle(0, 0, 20);
+    }
+    // Low battery / fault alerts
+    if (mower.status === "faulted") {
+      const alertY = -22;
+      indicator.fillStyle(0xef4444, 1);
+      indicator.fillTriangle(0, alertY - 5, -4, alertY + 3, 4, alertY + 3);
+      indicator.fillStyle(0xffffff, 1);
+      indicator.fillRect(-0.5, alertY - 2, 1, 3);
+      indicator.fillRect(-0.5, alertY + 0.5, 1, 1);
+    } else if (mower.battery <= 20) {
+      const alertY = -22;
+      const pulseAlpha = 0.5 + 0.5 * Math.sin(Date.now() / 200);
+      indicator.fillStyle(0xfbbf24, pulseAlpha);
+      indicator.fillTriangle(0, alertY - 5, -4, alertY + 3, 4, alertY + 3);
+      indicator.fillStyle(0x000000, 0.8);
+      indicator.fillRect(-0.5, alertY - 1, 1, 3);
+      indicator.fillRect(-1, alertY + 2, 2, 1);
     }
     shadow.setVisible(true);
   }

@@ -13,6 +13,8 @@ import {
   PlayCircle,
   PauseCircle,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Eye,
   Map as MapIcon,
   Route,
@@ -20,6 +22,8 @@ import {
   Clock,
   Timer,
   CalendarClock,
+  DollarSign,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +41,11 @@ import { TOOLS } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 import { GRASS_COLOR_MID } from "@/lib/constants";
 import { sortTilesNearestNeighbor } from "@/lib/fleet";
-import type { MowerTier } from "@/lib/types";
+import { PriceCalculator } from "@/components/game/PriceCalculator";
+import { useContextStore } from "@/lib/store/contextStore";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { TIER_CONFIGS } from "@/lib/types";
+import type { ClientTier, TierConfig, MowerTier } from "@/lib/types";
 
 declare global {
   interface WindowEventMap {
@@ -119,12 +127,93 @@ export function Sidebar() {
   const [tier, setTier] = useState<MowerTier>("standard");
   const [tab, setTab] = useState("tools");
   const [showAdd, setShowAdd] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+
+  const updateClientTier = useContextStore((s) => s.updateClientTier);
 
   const state = useSimulationStore();
   const selectedMower = mowers.find((m) => m.id === selectedMowerId) ?? null;
 
+  // Tier limits
+  const clients = useContextStore((s) => s.clients);
+  const activeClientId = useContextStore((s) => s.activeClientId);
+  const activeClient = clients.find((c) => c.id === activeClientId);
+  const tierConfig = activeClient ? (TIER_CONFIGS as any)[activeClient.tier] : null;
+  const atMowerLimit = tierConfig ? mowers.length >= tierConfig.maxMowers : false;
+  const atStationLimit = tierConfig ? stations.length >= tierConfig.maxStations : false;
+
+  if (collapsed) {
+    return (
+      <aside className="flex h-full w-12 shrink-0 flex-col items-center border-l border-border bg-surface py-2 gap-2">
+        <button
+          onClick={() => setCollapsed(false)}
+          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-border hover:text-foreground transition-colors"
+          title="Expandir panel"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <Separator />
+        <button
+          onClick={() => { setCollapsed(false); setTab("tools"); }}
+          className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+            tab === "tools" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-border hover:text-foreground"
+          }`}
+          title="Herramientas"
+        >
+          <Layers className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => { setCollapsed(false); setTab("mowers"); }}
+          className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+            tab === "mowers" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-border hover:text-foreground"
+          }`}
+          title="Podadoras"
+        >
+          <Bot className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => { setCollapsed(false); setTab("strategy"); }}
+          className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+            tab === "strategy" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-border hover:text-foreground"
+          }`}
+          title="Estrategia"
+        >
+          <Route className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => { setCollapsed(false); setTab("business"); }}
+          className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+            tab === "business" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-border hover:text-foreground"
+          }`}
+          title="Negocio"
+        >
+          <DollarSign className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => { setCollapsed(false); setTab("settings"); }}
+          className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${
+            tab === "settings" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-border hover:text-foreground"
+          }`}
+          title="Ajustes"
+        >
+          <Settings2 className="h-4 w-4" />
+        </button>
+      </aside>
+    );
+  }
+
   return (
     <aside className="flex h-full w-[280px] shrink-0 flex-col border-l border-border bg-surface">
+      <div className="flex items-center justify-end px-2 pt-2">
+        <button
+          onClick={() => setCollapsed(true)}
+          className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-border hover:text-foreground transition-colors"
+          title="Colapsar panel"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
       <Tabs value={tab} onValueChange={(v) => {
         setTab(v);
         setActiveSidebarTab(v);
@@ -132,7 +221,7 @@ export function Sidebar() {
         // Pause simulation when entering settings tab
         if (v === "settings" && isPlaying) setPlaying(false);
       }} className="flex h-full flex-col">
-        <TabsList className="mx-3 mt-3 mb-0 grid grid-cols-4">
+        <TabsList className="mx-3 mt-3 mb-0 grid grid-cols-5">
           <Tooltip content="Herramientas">
             <TabsTrigger value="tools" className="px-1 min-w-0 h-8">
               <Layers className="h-4 w-4" />
@@ -146,6 +235,11 @@ export function Sidebar() {
           <Tooltip content="Estrategia">
             <TabsTrigger value="strategy" className="px-1 min-w-0 h-8">
               <Route className="h-4 w-4" />
+            </TabsTrigger>
+          </Tooltip>
+          <Tooltip content="Negocio">
+            <TabsTrigger value="business" className="px-1 min-w-0 h-8">
+              <DollarSign className="h-4 w-4" />
             </TabsTrigger>
           </Tooltip>
           <Tooltip content="Ajustes">
@@ -417,20 +511,22 @@ export function Sidebar() {
                     <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                   </div>
                   <Button size="sm" variant="outline" onClick={() => {
-                    if (!space) return;
+                    if (!space || atMowerLimit) return;
                     addMower(Math.floor(Math.random() * space.width), Math.floor(Math.random() * space.height), tier);
-                  }} className="h-8 px-2.5 text-[11px]">
+                  }} className="h-8 px-2.5 text-[11px]" disabled={atMowerLimit}
+                    title={atMowerLimit ? `Límite de ${tierConfig?.maxMowers} podadoras alcanzado (${activeClient?.tier})` : ""}>
                     <Bot className="h-3 w-3 mr-1" />
-                    Añadir
+                    {atMowerLimit ? "Límite" : "Añadir"}
                   </Button>
                 </div>
                 <Button size="sm" variant="outline" className="w-full h-8 text-[11px]"
                   onClick={() => {
-                    if (!space) return;
+                    if (!space || atStationLimit) return;
                     addStation(Math.floor(Math.random() * space.width), Math.floor(Math.random() * space.height));
-                  }}>
+                  }} disabled={atStationLimit}
+                  title={atStationLimit ? `Límite de ${tierConfig?.maxStations} estaciones alcanzado (${activeClient?.tier})` : ""}>
                   <Plug className="h-3 w-3 mr-1" />
-                  Estación aleatoria
+                  {atStationLimit ? "Límite alcanzado" : "Estación aleatoria"}
                 </Button>
               </CardContent>
             )}
@@ -748,6 +844,58 @@ export function Sidebar() {
           )}
         </TabsContent>
 
+        {/* ── Negocio ──────────────────────────────────── */}
+        <TabsContent value="business" className="space-y-2.5 p-3 pt-2.5 scrollbar-thin overflow-y-auto">
+          {/* Plan selector */}
+          <Card>
+            <CardHeader className="p-2.5 pb-1.5">
+              <CardTitle className="flex items-center gap-1.5 text-xs">
+                <Crown className="h-3.5 w-3.5 text-accent" />
+                Plan Actual
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1.5 p-2.5 pt-0">
+              {activeClient && (() => {
+                const tc: TierConfig | null = tierConfig;
+                return tc ? (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-medium">{tc.label}</span>
+                      <span className="text-[10px] font-mono text-primary font-bold">€{tc.priceMonthly}/mes</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{tc.description}</p>
+                    <div className="grid grid-cols-2 gap-1 mt-1">
+                      {(["base", "standard", "premium", "enterprise"] as ClientTier[]).map((t) => {
+                        const tConf = (TIER_CONFIGS as Record<ClientTier, TierConfig>)[t];
+                        const isActive = activeClient.tier === t;
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => {
+                              if (activeClient) updateClientTier(activeClient.id, t);
+                            }}
+                            className={cn(
+                              "rounded-md border p-1 text-left transition-colors text-[10px]",
+                              isActive ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/30 text-muted-foreground",
+                            )}
+                          >
+                            <span className="font-medium block">{tConf.label}</span>
+                            <span className="font-mono text-[9px]">{tConf.priceMonthly > 0 ? `€${tConf.priceMonthly}` : "Custom"}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-[10px] text-muted-foreground text-center py-2">Selecciona un cliente primero</p>
+                );
+              })()}
+            </CardContent>
+          </Card>
+          <PriceCalculator />
+        </TabsContent>
+
         {/* ── Ajustes ──────────────────────────────────── */}
         <TabsContent value="settings" className="space-y-2.5 p-3 pt-2.5 scrollbar-thin overflow-y-auto">
           {/* Simulated time display */}
@@ -799,6 +947,57 @@ export function Sidebar() {
               </CardContent>
             </Card>
           )}
+
+          {/* ── Estadísticas ── */}
+          {state.fleetInitialized && mowers.length > 0 && (() => {
+            let totalGrass = 0, mowableGrass = 0;
+            for (const [, cell] of state.cells) {
+              if (cell.type === "grass") {
+                totalGrass++;
+                if ((cell.grassHeight ?? 0) >= config.mowThreshold) mowableGrass++;
+              }
+            }
+            const totalTiles = mowers.reduce((sum, m) => sum + (m.coverageTiles?.length ?? 0), 0);
+            const avgTiles = mowers.length > 0 ? totalTiles / mowers.length : 0;
+            const maxTiles = Math.max(...mowers.map((m) => m.coverageTiles?.length ?? 0));
+            const balance = avgTiles > 0 ? maxTiles / avgTiles : 1;
+            const totalTrips = mowers.reduce((sum, m) => sum + (m.trips?.length ?? 0), 0);
+            return (
+              <Card>
+                <CardHeader className="p-2.5 pb-1.5">
+                  <CardTitle className="flex items-center gap-1.5 text-xs">
+                    <Sparkles className="h-3.5 w-3.5 text-accent" />
+                    Estadísticas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-1 p-2.5 pt-0">
+                  <div className="flex items-center justify-between font-mono text-[11px]">
+                    <span className="text-muted-foreground">Césped total</span>
+                    <span className="text-foreground font-medium">{totalGrass} tiles</span>
+                  </div>
+                  <div className="flex items-center justify-between font-mono text-[11px]">
+                    <span className="text-muted-foreground">Poda requerida</span>
+                    <span className="text-foreground font-medium">{mowableGrass} tiles ({totalGrass > 0 ? Math.round((mowableGrass / totalGrass) * 100) : 0}%)</span>
+                  </div>
+                  <Separator className="my-0.5" />
+                  <div className="flex items-center justify-between font-mono text-[11px]">
+                    <span className="text-muted-foreground">Tiles/podadora</span>
+                    <span className="text-foreground font-medium">{mowers.map((m) => m.coverageTiles?.length ?? 0).join(", ")}</span>
+                  </div>
+                  <div className="flex items-center justify-between font-mono text-[11px]">
+                    <span className="text-muted-foreground">Balance</span>
+                    <span className={`font-medium ${balance <= 1.3 ? "text-primary" : balance <= 1.5 ? "text-accent" : "text-destructive"}`}>
+                      {balance.toFixed(2)}x
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between font-mono text-[11px]">
+                    <span className="text-muted-foreground">Viajes totales</span>
+                    <span className="text-foreground font-medium">{totalTrips}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
 
           <Card>
             <CardHeader className="p-2.5 pb-1.5">
@@ -883,20 +1082,20 @@ export function Sidebar() {
                 variant="destructive"
                 size="sm"
                 className="w-full h-8 text-[11px]"
-                onClick={() => {
-                  if (!space) return;
-                  if (
-                    confirm(
-                      "¿Resetear el mapa? Esto borrará todas las celdas, podadoras y estaciones.",
-                    )
-                  ) {
-                    resetMap(space.width, space.height);
-                  }
-                }}
+                onClick={() => setResetConfirmOpen(true)}
               >
                 <X className="h-3.5 w-3.5 mr-1.5" />
                 Resetear mapa
               </Button>
+              <ConfirmDialog
+                open={resetConfirmOpen}
+                onOpenChange={setResetConfirmOpen}
+                title="Resetear mapa"
+                description="¿Resetear el mapa? Esto borrará todas las celdas, podadoras y estaciones. Esta acción no se puede deshacer."
+                confirmLabel="Resetear"
+                variant="destructive"
+                onConfirm={() => { if (space) resetMap(space.width, space.height); }}
+              />
             </CardContent>
           </Card>
         </TabsContent>

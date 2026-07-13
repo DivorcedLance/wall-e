@@ -107,6 +107,10 @@ interface SimulationState {
   saving: boolean;
   version: number;
   fleetInitialized: boolean;
+  undoStack: Array<{ cells: Map<string, CellData>; grassHeights: Map<string, number> }>;
+  redoStack: Array<{ cells: Map<string, CellData>; grassHeights: Map<string, number> }>;
+  undo: () => void;
+  redo: () => void;
   strategyEditing: boolean;
   strategyEditMowerId: string | null;
   strategyEditMode: "tiles" | "path";
@@ -140,6 +144,8 @@ interface SimulationState {
   tick: (dt: number) => void;
   saveSpace: () => Promise<void>;
   setDirty: (dirty: boolean) => void;
+  eventLog: Array<{ time: number; day: number; message: string; type: "info" | "warning" | "error" | "success" }>;
+  addLogEntry: (entry: { time: number; day: number; message: string; type: "info" | "warning" | "error" | "success" }) => void;
 }
 
 const TICK_MS = 100;
@@ -181,6 +187,38 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   strategyEditMode: "tiles",
   simulatedTimeMs: 8 * 3600 * 1000, // start at 8:00 AM
   simulatedDay: 0, // Monday
+  eventLog: [] as Array<{ time: number; day: number; message: string; type: "info" | "warning" | "error" | "success" }>,
+  addLogEntry: (entry: { time: number; day: number; message: string; type: "info" | "warning" | "error" | "success" }) => {
+    set((s) => ({ eventLog: [...s.eventLog.slice(-100), entry] }));
+  },
+  undoStack: [],
+  redoStack: [],
+  undo: () => {
+    const state = get();
+    if (state.undoStack.length === 0) return;
+    const prev = state.undoStack[state.undoStack.length - 1];
+    set({
+      cells: new Map(prev.cells),
+      grassHeights: new Map(prev.grassHeights),
+      undoStack: state.undoStack.slice(0, -1),
+      redoStack: [...state.redoStack, { cells: new Map(state.cells), grassHeights: new Map(state.grassHeights) }],
+      dirty: true,
+      version: state.version + 1,
+    });
+  },
+  redo: () => {
+    const state = get();
+    if (state.redoStack.length === 0) return;
+    const next = state.redoStack[state.redoStack.length - 1];
+    set({
+      cells: new Map(next.cells),
+      grassHeights: new Map(next.grassHeights),
+      redoStack: state.redoStack.slice(0, -1),
+      undoStack: [...state.undoStack, { cells: new Map(state.cells), grassHeights: new Map(state.grassHeights) }],
+      dirty: true,
+      version: state.version + 1,
+    });
+  },
 
   loadSpace: async (space, config, layout) => {
     const [storedCells, grassHeights, storedMowers, storedStations] =
@@ -190,7 +228,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       const cells = new Map<string, CellData>();
       const heights = new Map<string, number>();
       for (const c of layout.cells) {
-        cells.set(`${c.x},${c.y}`, { type: c.type, grassHeight: c.grassHeight ?? (c.type === "grass" ? 50 : 0), lastMowed: 0 });
+        cells.set(`${c.x},${c.y}`, { type: c.type, grassHeight: c.grassHeight ?? (c.type === "grass" ? 100 : 0), lastMowed: 0 });
         if (c.type === "grass" && c.grassHeight !== undefined) heights.set(`${c.x},${c.y}`, c.grassHeight);
       }
       const mowers: Mower[] = layout.mowers.map((m, i) => ({
@@ -226,19 +264,21 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
   paintCell: (x, y, type) => {
     if (get().saving) return;
     set((s) => {
+      const undoEntry = { cells: new Map(s.cells), grassHeights: new Map(s.grassHeights) };
       const next = new Map(s.cells); const key = `${x},${y}`;
       const prev = next.get(key) ?? { type: "empty", grassHeight: 0, lastMowed: 0 };
       const updated: CellData = { type, grassHeight: type === "grass" ? prev.grassHeight || 30 : 0, lastMowed: prev.lastMowed };
       next.set(key, updated);
       const heights = new Map(s.grassHeights);
       if (type === "grass") heights.set(key, updated.grassHeight); else heights.delete(key);
-      return { cells: next, grassHeights: heights, dirty: true, version: s.version + 1 };
+      return { cells: next, grassHeights: heights, dirty: true, version: s.version + 1, undoStack: [...s.undoStack.slice(-50), undoEntry], redoStack: [] };
     });
   },
 
   paintRect: (x0, y0, x1, y1, type) => {
     if (get().saving) return;
     set((s) => {
+      const undoEntry = { cells: new Map(s.cells), grassHeights: new Map(s.grassHeights) };
       const next = new Map(s.cells); const heights = new Map(s.grassHeights);
       for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) {
         for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) {
@@ -248,7 +288,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
           if (type === "grass") heights.set(key, updated.grassHeight); else heights.delete(key);
         }
       }
-      return { cells: next, grassHeights: heights, dirty: true, version: s.version + 1 };
+      return { cells: next, grassHeights: heights, dirty: true, version: s.version + 1, undoStack: [...s.undoStack.slice(-50), undoEntry], redoStack: [] };
     });
   },
 
@@ -533,6 +573,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
             mower.status = "operating";
             mower.path = []; mower.pathIndex = 0;
             mower.moveT = 1; mower.fromX = mower.x; mower.fromY = mower.y;
+            get().addLogEntry({ time: newTimeMs, day: newDay, message: `${mower.name} batería completa — reanudando operación`, type: "success" });
             dirty = true;
           }
         } else {
@@ -547,6 +588,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       if (mower.status === "returning" && cellHere && cellHere.type === "charging_station") {
         mower.status = "charging"; mower.path = []; mower.pathIndex = 0;
         mower.moveT = 1; mower.fromX = mower.x; mower.fromY = mower.y;
+        get().addLogEntry({ time: newTimeMs, day: newDay, message: `${mower.name} cargando en estación`, type: "info" });
         dirty = true; continue;
       }
 
@@ -574,6 +616,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
           mower.status = "returning";
           mower.path = findPath(mower.x, mower.y, assignedStation.x, assignedStation.y, updatedCells, space.width, space.height);
           mower.pathIndex = 0; mower.fromX = mower.x; mower.fromY = mower.y; mower.moveT = 0;
+          get().addLogEntry({ time: newTimeMs, day: newDay, message: `${mower.name} retornando — batería baja (${Math.round(mower.battery)}%)`, type: "warning" });
           dirty = true; continue;
         }
       }

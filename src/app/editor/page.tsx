@@ -1,19 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Bot } from "lucide-react";
+import { ArrowLeft, Bot, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useContextStore } from "@/lib/store/contextStore";
 import { useSimulationStore } from "@/lib/store/simulationStore";
+import { useEditorStore } from "@/lib/store/editorStore";
 import { useHydrated } from "@/lib/hooks/useHydrated";
 import { useSaveShortcut } from "@/lib/hooks/useSaveShortcut";
 import { ContextHeader } from "@/components/game/ContextHeader";
 import { Sidebar } from "@/components/game/Sidebar";
 import { CameraControls } from "@/components/game/CameraControls";
 import { TimeControls } from "@/components/game/TimeControls";
+import { Minimap } from "@/components/game/Minimap";
 import { IsometricGame } from "@/components/game/IsometricGame";
 
 export default function EditorPage() {
@@ -47,7 +49,9 @@ export default function EditorPage() {
       const project = projects.find((p) => p.id === activeProjectId);
       const sp = spaces.find((s) => s.id === activeSpaceId);
       if (project && sp) {
-        loadSpace(sp, project.config);
+        loadSpace(sp, project.config).catch((err) => {
+          console.error("Error loading space in editor:", err);
+        });
       }
     }
   }, [
@@ -62,6 +66,32 @@ export default function EditorPage() {
   ]);
 
   useSaveShortcut();
+  const [presentationMode, setPresentationMode] = useState(false);
+
+  // Undo/Redo + Copy/Paste keyboard shortcuts
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (ctrl && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        useSimulationStore.getState().undo();
+      } else if (ctrl && e.key === "z" && e.shiftKey) {
+        e.preventDefault();
+        useSimulationStore.getState().redo();
+      } else if (ctrl && e.key === "y") {
+        e.preventDefault();
+        useSimulationStore.getState().redo();
+      } else if (ctrl && e.key === "c") {
+        useEditorStore.getState().copySelection();
+      } else if (ctrl && e.key === "x") {
+        useEditorStore.getState().cutSelection();
+      } else if (ctrl && e.key === "v") {
+        useEditorStore.getState().pasteClipboard();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   if (!hydrated) {
     return (
@@ -88,7 +118,7 @@ export default function EditorPage() {
             </div>
             <Button
               className="w-full"
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/simulador")}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver al selector
@@ -112,18 +142,26 @@ export default function EditorPage() {
   return (
     <TooltipProvider>
       <div className="flex h-screen w-full flex-col overflow-hidden bg-background">
-        <ContextHeader />
+        {!presentationMode && <ContextHeader />}
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
             <IsometricGame />
+            <Minimap />
             <div className="pointer-events-none absolute inset-x-0 bottom-4 z-10 flex justify-center">
               <div className="pointer-events-auto flex items-center gap-2">
                 <CameraControls />
                 <TimeControls />
               </div>
             </div>
+            <button
+              onClick={() => setPresentationMode(!presentationMode)}
+              className="pointer-events-auto absolute top-2 right-2 z-20 flex h-7 w-7 items-center justify-center rounded-md bg-surface/80 backdrop-blur text-muted-foreground hover:text-foreground hover:bg-border transition-colors"
+              title={presentationMode ? "Salir de presentación" : "Modo presentación"}
+            >
+              <Monitor className="h-3.5 w-3.5" />
+            </button>
           </main>
-          <Sidebar />
+          {!presentationMode && <Sidebar />}
         </div>
       </div>
     </TooltipProvider>

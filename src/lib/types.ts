@@ -1,4 +1,58 @@
-export type ClientTier = "base" | "standard" | "premium";
+export type ClientTier = "base" | "standard" | "premium" | "enterprise";
+
+export interface TierConfig {
+  maxMowers: number;
+  maxStations: number;
+  maxSpaces: number;
+  maxGridSize: number;
+  priceMonthly: number;
+  mowerTier: MowerTier;
+  label: string;
+  description: string;
+}
+
+export const TIER_CONFIGS: Record<ClientTier, TierConfig> = {
+  base: {
+    maxMowers: 2,
+    maxStations: 1,
+    maxSpaces: 3,
+    maxGridSize: 20,
+    priceMonthly: 150,
+    mowerTier: "base",
+    label: "Básico",
+    description: "Hasta 2 podadoras, 1 estación, mapas 20×20",
+  },
+  standard: {
+    maxMowers: 5,
+    maxStations: 3,
+    maxSpaces: 10,
+    maxGridSize: 35,
+    priceMonthly: 350,
+    mowerTier: "standard",
+    label: "Estándar",
+    description: "Hasta 5 podadoras, 3 estaciones, mapas 35×35",
+  },
+  premium: {
+    maxMowers: 15,
+    maxStations: 5,
+    maxSpaces: 50,
+    maxGridSize: 60,
+    priceMonthly: 600,
+    mowerTier: "premium",
+    label: "Premium",
+    description: "Hasta 15 podadoras, 5 estaciones, mapas 60×60",
+  },
+  enterprise: {
+    maxMowers: Infinity,
+    maxStations: Infinity,
+    maxSpaces: Infinity,
+    maxGridSize: 100,
+    priceMonthly: 0,
+    mowerTier: "premium",
+    label: "Enterprise",
+    description: "Sin límites, soporte dedicado",
+  },
+};
 
 export interface Client {
   id: string;

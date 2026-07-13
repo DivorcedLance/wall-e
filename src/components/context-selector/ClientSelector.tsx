@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { Tooltip } from "@/components/ui/tooltip";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useContextStore } from "@/lib/store/contextStore";
 import { cn } from "@/lib/utils";
 import type { ClientTier } from "@/lib/types";
@@ -17,12 +18,14 @@ const tierOptions: Array<{ value: ClientTier; label: string }> = [
   { value: "base", label: "Base" },
   { value: "standard", label: "Standard" },
   { value: "premium", label: "Premium" },
+  { value: "enterprise", label: "Enterprise" },
 ];
 
 const tierColors: Record<ClientTier, string> = {
   base: "bg-muted text-muted-foreground",
   standard: "bg-primary/10 text-primary",
   premium: "bg-accent/10 text-accent",
+  enterprise: "bg-secondary/10 text-secondary",
 };
 
 export function ClientSelector() {
@@ -35,6 +38,7 @@ export function ClientSelector() {
   const [showNew, setShowNew] = useState(false);
   const [name, setName] = useState("");
   const [tier, setTier] = useState<ClientTier>("base");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const activeClient = clients.find((c) => c.id === activeId);
 
@@ -99,17 +103,22 @@ export function ClientSelector() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => {
-                if (confirm("¿Eliminar este cliente y todos sus datos?")) {
-                  remove(activeId);
-                }
-              }}
+              onClick={() => setConfirmOpen(true)}
               className="shrink-0 h-9 w-9"
             >
               <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
           </Tooltip>
         )}
+        <ConfirmDialog
+          open={confirmOpen}
+          onOpenChange={setConfirmOpen}
+          title="Eliminar cliente"
+          description="¿Eliminar este cliente y todos sus datos? Esta acción no se puede deshacer."
+          confirmLabel="Eliminar"
+          variant="destructive"
+          onConfirm={() => { if (activeId) remove(activeId); }}
+        />
       </div>
 
       {activeClient && (

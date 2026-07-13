@@ -29,6 +29,7 @@ interface EditorState {
   showCoordinates: boolean;
   followMower: boolean;
   activeSidebarTab: string;
+  clipboard: Array<{ x: number; y: number; type: string; grassHeight?: number }> | null;
   setTool: (tool: ToolType) => void;
   setGrassBrushHeight: (height: number) => void;
   setSelectedCells: (cells: Array<{ x: number; y: number }>) => void;
@@ -44,6 +45,9 @@ interface EditorState {
   toggleCoordinates: () => void;
   setFollowMower: (follow: boolean) => void;
   setActiveSidebarTab: (tab: string) => void;
+  copySelection: () => void;
+  cutSelection: () => void;
+  pasteClipboard: () => void;
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -58,6 +62,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   showCoordinates: false,
   followMower: false,
   activeSidebarTab: "tools",
+  clipboard: null,
 
   setTool: (tool) => {
     set({ tool, selectedCells: [] });
@@ -102,4 +107,45 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set((s) => ({ showCoordinates: !s.showCoordinates })),
   setFollowMower: (follow) => set({ followMower: follow }),
   setActiveSidebarTab: (tab) => set({ activeSidebarTab: tab }),
+  copySelection: () => {
+    const { selectedCells } = get();
+    if (selectedCells.length === 0) return;
+    void import("@/lib/store/simulationStore").then(({ useSimulationStore }) => {
+      const cells = useSimulationStore.getState().cells;
+      const clipboard = selectedCells.map(({ x, y }) => {
+        const cell = cells.get(`${x},${y}`);
+        return { x, y, type: cell?.type ?? "grass", grassHeight: cell?.grassHeight };
+      });
+      set({ clipboard });
+    });
+  },
+  cutSelection: () => {
+    const { selectedCells } = get();
+    if (selectedCells.length === 0) return;
+    void import("@/lib/store/simulationStore").then(({ useSimulationStore }) => {
+      const state = useSimulationStore.getState();
+      const cells = state.cells;
+      const clipboard = selectedCells.map(({ x, y }) => {
+        const cell = cells.get(`${x},${y}`);
+        return { x, y, type: cell?.type ?? "grass", grassHeight: cell?.grassHeight };
+      });
+      set({ clipboard });
+      for (const { x, y } of selectedCells) {
+        state.paintCell(x, y, "empty");
+      }
+    });
+  },
+  pasteClipboard: () => {
+    const { clipboard } = get();
+    if (!clipboard || clipboard.length === 0) return;
+    void import("@/lib/store/simulationStore").then(({ useSimulationStore }) => {
+      const state = useSimulationStore.getState();
+      for (const { x, y, type, grassHeight } of clipboard) {
+        state.paintCell(x, y, type as any);
+        if (type === "grass" && grassHeight !== undefined) {
+          state.setGrassHeight(x, y, grassHeight);
+        }
+      }
+    });
+  },
 }));

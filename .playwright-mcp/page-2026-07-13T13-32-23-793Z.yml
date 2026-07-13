@@ -1,0 +1,6 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img [ref=e4]
+    - heading "W.A.L.L.-E." [level=1] [ref=e7]
+    - paragraph [ref=e8]: Orquestación de podadoras autónomas
+  - generic [ref=e10]: Cargando W.A.L.L.-E.

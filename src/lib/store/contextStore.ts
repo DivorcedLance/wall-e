@@ -4,12 +4,14 @@ import { create } from "zustand";
 import { db } from "@/lib/db/indexedDB";
 import { generateId } from "@/lib/utils";
 import { DEFAULT_PROJECT_CONFIG } from "@/lib/constants";
+import { TIER_CONFIGS } from "@/lib/types";
 import type {
   Client,
   ClientTier,
   Project,
   ProjectConfig,
   Space,
+  TierConfig,
 } from "@/lib/types";
 
 const STORAGE_KEY = "walle-context";
@@ -66,6 +68,8 @@ interface ContextState {
   deleteClient: (id: string) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
   deleteSpace: (id: string) => Promise<void>;
+  updateClientTier: (clientId: string, tier: ClientTier) => Promise<void>;
+  getActiveTierConfig: () => TierConfig | null;
 }
 
 const persisted = loadPersistedContext();
@@ -244,5 +248,20 @@ export const useContextStore = create<ContextState>((set, get) => ({
       activeSpaceId: nextSpaceId,
     });
     persistContext({ activeClientId: s.activeClientId, activeProjectId: s.activeProjectId, activeSpaceId: nextSpaceId });
+  },
+
+  updateClientTier: async (clientId, tier) => {
+    const client = get().clients.find((c) => c.id === clientId);
+    if (!client) return;
+    const updated = { ...client, tier };
+    await db.putClient(updated);
+    set((s) => ({ clients: s.clients.map((c) => (c.id === clientId ? updated : c)) }));
+  },
+
+  getActiveTierConfig: () => {
+    const { clients, activeClientId } = get();
+    const client = clients.find((c) => c.id === activeClientId);
+    if (!client) return null;
+    return (TIER_CONFIGS as Record<ClientTier, TierConfig>)[client.tier] ?? null;
   },
 }));

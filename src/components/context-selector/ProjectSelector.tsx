@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { Tooltip } from "@/components/ui/tooltip";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useContextStore } from "@/lib/store/contextStore";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ export function ProjectSelector() {
 
   const [showNew, setShowNew] = useState(false);
   const [name, setName] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const handleCreate = async () => {
     if (!activeClientId || !name.trim()) return;
@@ -88,17 +90,22 @@ export function ProjectSelector() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => {
-                if (confirm("¿Eliminar este proyecto y sus espacios?")) {
-                  remove(activeId);
-                }
-              }}
+              onClick={() => setConfirmOpen(true)}
               className="shrink-0 h-9 w-9"
             >
               <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
           </Tooltip>
         )}
+        <ConfirmDialog
+          open={confirmOpen}
+          onOpenChange={setConfirmOpen}
+          title="Eliminar proyecto"
+          description="¿Eliminar este proyecto y todos sus espacios? Esta acción no se puede deshacer."
+          confirmLabel="Eliminar"
+          variant="destructive"
+          onConfirm={() => { if (activeId) remove(activeId); }}
+        />
       </div>
 
       {activeProject && (

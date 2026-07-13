@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Settings2 } from "lucide-react";
+import { ChevronDown, Settings2, Crown, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import type { ProjectConfig } from "@/lib/types";
+import { useContextStore } from "@/lib/store/contextStore";
+import { TIER_CONFIGS } from "@/lib/types";
+import type { ProjectConfig, ClientTier, TierConfig } from "@/lib/types";
+
+const TIER_ORDER: ClientTier[] = ["base", "standard", "premium", "enterprise"];
 
 interface ConfigPanelProps {
   config: ProjectConfig;
@@ -18,12 +22,57 @@ interface ConfigPanelProps {
 export function ConfigPanel({ config, onChange }: ConfigPanelProps) {
   const [open, setOpen] = useState(false);
 
+  const clients = useContextStore((s) => s.clients);
+  const activeClientId = useContextStore((s) => s.activeClientId);
+  const activeClient = clients.find((c) => c.id === activeClientId);
+  const updateClientTier = useContextStore((s) => s.updateClientTier);
+  const tierConfig: TierConfig | null = activeClient ? (TIER_CONFIGS as Record<ClientTier, TierConfig>)[activeClient.tier] ?? null : null;
+
   const update = (partial: Partial<ProjectConfig>) => {
     onChange({ ...config, ...partial });
   };
 
   return (
     <Card>
+      {/* Tier info banner */}
+      {activeClient && tierConfig && (
+        <div className="flex items-center gap-2 rounded-t-lg border-b border-border bg-primary/5 px-4 py-2">
+          <Crown className="h-4 w-4 text-primary shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium text-foreground">Plan {tierConfig.label}</p>
+            <p className="text-[10px] text-muted-foreground truncate">{tierConfig.description}</p>
+          </div>
+          <span className="text-xs font-bold text-primary shrink-0">€{tierConfig.priceMonthly}/mes</span>
+        </div>
+      )}
+
+      {/* Plan selector */}
+      {activeClient && (
+        <div className="px-4 pt-3 pb-2 border-b border-border">
+          <Label className="text-[10px] text-muted-foreground mb-1.5 block">Cambiar plan</Label>
+          <div className="grid grid-cols-2 gap-1.5">
+            {TIER_ORDER.map((t) => {
+              const tc = (TIER_CONFIGS as Record<ClientTier, TierConfig>)[t];
+              const isActive = activeClient.tier === t;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => updateClientTier(activeClient.id, t)}
+                  className={cn(
+                    "flex flex-col items-start rounded-md border p-1.5 text-left transition-colors text-[10px]",
+                    isActive ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/30 text-muted-foreground",
+                  )}
+                >
+                  <span className="font-medium">{tc.label}</span>
+                  <span className="font-mono text-[9px]">{tc.priceMonthly > 0 ? `€${tc.priceMonthly}/mes` : "Custom"}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <CardHeader className="cursor-pointer p-4" onClick={() => setOpen(!open)}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

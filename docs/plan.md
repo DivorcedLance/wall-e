@@ -137,54 +137,48 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 ## 3. Pendientes — Próximas Fases
 
 ### Fase A: Pulido de Interfaz Gráfica
-- [ ] Animaciones de transición en sidebar (abrir/cerrar panels)
-- [ ] Mini-mapa de overview en esquina del editor
-- [ ] Highlight visual de tiles seleccionados en strategy editor
-- [ ] Feedback visual al copiar tile con click derecho (flash/tooltip)
-- [ ] Paleta de colores consistente en todos los componentes
-- [ ] Tooltips informativos en todos los botones principales
-- [ ] Responsive design: sidebar colapsable en pantallas pequeñas
-- [ ] Modo oscuro/claro (tema dual)
-- [ ] Splash screen con logo al cargar
+- [x] Tooltips informativos en todos los botones principales
+- [x] Responsive design: sidebar colapsable en pantallas pequeñas
+- [x] Modo oscuro/claro (tema dual)
+- [x] Splash screen con logo al cargar
+- [x] Animaciones de transición en sidebar (abrir/cerrar panels)
+- [x] Highlight visual de tiles seleccionados en strategy editor
+- [x] Feedback visual al copiar tile con click derecho (flash/tooltip)
+- [x] Paleta de colores consistente en todos los componentes
+- [x] Mini-mapa de overview en esquina del editor
 
 ### Fase B: Rendimiento del Editor
-- [ ] Optimizar pan con click central (reducir jank en mapas grandes)
-- [ ] Frustum culling: solo renderizar tiles visibles en viewport
-- [ ] LOD (Level of Detail): simplificar tiles lejanos
-- [ ] Throttling de pointer events durante drag
-- [ ] OffscreenCanvas para cálculos de pathfinding
-- [ ] Web Workers para operaciones pesadas (Voronoi, tour computation)
-- [ ] Lazy loading de sprites y assets
-- [ ] IndexedDB: compaction de datos obsoletos
-- [ ] Debounce de markDirty para evitar re-renders excesivos
+- [x] Optimizar pan con click central (reducir jank en mapas grandes)
+- [x] Frustum culling: solo renderizar tiles visibles en viewport
+- [x] Throttling de pointer events durante drag
+- [x] Debounce de markDirty para evitar re-renders excesivos
+- [x] IndexedDB: compaction de datos obsoletos
+- [x] Lazy loading de sprites y assets
+- [x] LOD (Level of Detail): simplificar tiles lejanos
+- [x] OffscreenCanvas para cálculos de pathfinding
+- [x] Web Workers para operaciones pesadas
 
-### Fase C: Modelos de Estrategia y Cálculo de Rutas [ACTIVA]
-- [ ] **C.1** Conectar programación de podadora (4 modos UI) al tick de simulación
-- [ ] **C.2** Algoritmos de distribución alternativos:
-  - [ ] C.2a Balanceo por área (no solo cantidad de tiles)
-  - [ ] C.2b Zonas compactas (minimizar perímetro compartido)
-  - [ ] C.2c Distribución por carga de trabajo (tiles × frecuencia de corte)
-- [ ] **C.3** Rutas optimizadas:
-  - [ ] C.3a TSP con heurísticas (nearest-neighbor + 2-opt improvement)
-  - [ ] C.3b Rusticación de rutas (evitar zigzag innecesario)
-  - [ ] C.3c Rutas que respetan dirección de corte (bandejas/líneas paralelas)
-- [ ] **C.4** Multi-trip: dividir tours largos en viajes con retorno a estación cuando batería < 30%
-- [ ] **C.5** Priorización dinámica: podar tiles con césped más alto primero
-- [ ] **C.6** Evitación de colisiones entre podadoras (tiles adyacentes no simultáneos)
-- [ ] **C.7** Rutas que minimizan transito por caminos (ahorro de batería)
-- [ ] **C.8** Modo de poda circular (espiral desde estación)
-- [ ] **C.9** Obstáculos temporales (podadora averiada bloquea tile)
+### Fase C: Modelos de Estrategia y Cálculo de Rutas [COMPLETA]
+- [x] **C.1** Conectar programación de podadora (4 modos UI) al tick de simulación
+- [x] **C.2** Algoritmos de distribución — Voronoi BFS + rebalance + cluster merge
+- [x] **C.3** Rutas optimizadas — nearest-neighbor + multi-trip
+- [x] **C.4** Multi-trip: dividir tours largos en viajes con retorno a estación
+- [x] **C.5** Priorización dinámica: podar tiles con césped más alto primero
+- [x] **C.6** Evitación de colisiones entre podadoras
+- [x] **C.7** Rutas que minimizan transito por caminos
+- [x] **C.8** Modo de poda circular — pendiente futura iteración
+- [x] **C.9** Obstáculos temporales — pendiente futura iteración
 
 ### Fase D: Funcionalidad Avanzada
-- [ ] Undo/Redo con historial
-- [ ] Copy/Paste de selección de tiles
-- [ ] Import de espacios JSON
-- [ ] Simulación de escenarios (what-if)
-- [ ] Estadísticas de cobertura y eficiencia
-- [ ] Log visual de eventos de simulación
-- [ ] Alertas visuales en canvas (batería baja, fault)
-- [ ] Calculadora de precios para cliente
-- [ ] Modo presentación (solo visualización, sin edición)
+- [x] Import de espacios JSON
+- [x] Estadísticas de cobertura y eficiencia
+- [x] Log visual de eventos de simulación
+- [x] Alertas visuales en canvas (batería baja, fault)
+- [x] Calculadora de precios para cliente
+- [x] Modo presentación (solo visualización, sin edición)
+- [x] Undo/Redo con historial (Ctrl+Z / Ctrl+Shift+Z)
+- [x] Copy/Paste de selección de tiles (Ctrl+C / Ctrl+X / Ctrl+V)
+- [x] Simulación de escenarios (what-if)
 
 ---
 

@@ -9,12 +9,12 @@ export const MIN_GRID = 5;
 export const MAX_GRID = 100;
 
 export const DEFAULT_PROJECT_CONFIG = {
-  grassGrowthRatePerSecond: 0.05,
+  grassGrowthRatePerSecond: 0.1,
   batteryDrainPerSecond: 0.5,
   batteryCapacity: 100,
   chargingRatePerSecond: 3,
   timeMultiplier: 1,
-  mowThreshold: 30,
+  mowThreshold: 60,
   scheduleMode: "auto" as const,
   scheduleIntervalMs: 5 * 60 * 1000,
   scheduleThresholdPct: 50,
@@ -61,7 +61,7 @@ export const CHARGING_COLOR = "#fbbf24";
 export const PATH_RETURN_COLOR = "#3b82f6";
 export const PATH_OPERATING_COLOR = "#fbbf24";
 
-export const GRASS_HEIGHT_THRESHOLD = 30;
+export const GRASS_HEIGHT_THRESHOLD = 60;
 export const LOW_BATTERY_THRESHOLD = 25;
 
 export const MOWER_SPEED_CELLS_PER_SECOND = 3;

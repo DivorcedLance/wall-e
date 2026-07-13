@@ -66,7 +66,7 @@ function tourDistance(tiles: PathPoint[], sx: number, sy: number): number {
 function evaluateDemo(demoId: string): Evaluation {
   const demo = DEMOS.find((d) => d.id === demoId)!;
   const layout = demo.build();
-  const mowThreshold = 30;
+  const mowThreshold = 60;
 
   // Build cells map
   const cells = new Map<string, CellData>();
@@ -75,7 +75,7 @@ function evaluateDemo(demoId: string): Evaluation {
       const existing = layout.cells.find((c) => c.x === x && c.y === y);
       cells.set(`${x},${y}`, {
         type: existing?.type ?? "grass",
-        grassHeight: existing?.grassHeight ?? (existing?.type === "grass" ? 100 : 0),
+        grassHeight: existing?.grassHeight ?? ((existing?.type ?? "grass") === "grass" ? 100 : 0),
         lastMowed: 0,
       });
     }

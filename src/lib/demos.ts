@@ -1,4 +1,5 @@
 import type { CellType, MowerTier } from "@/lib/types";
+import type { ClientTier } from "@/lib/types";
 
 export interface DemoCell {
   x: number;
@@ -31,6 +32,7 @@ export interface DemoDefinition {
   emoji: string;
   width: number;
   height: number;
+  requiredTier: ClientTier;
   build: () => DemoLayout;
 }
 
@@ -86,6 +88,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "leaf",
     width: 20,
     height: 20,
+    requiredTier: "base",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 19, 0, "path"));
@@ -106,7 +109,7 @@ export const DEMOS: DemoDefinition[] = [
         { x: 18, y: 19 },
         { x: 19, y: 18 },
       ];
-      cells.push(...fillGrass(20, 20, 50, 30, reserved));
+      cells.push(...fillGrass(20, 20, 80, 20, reserved));
       return {
         cells,
         mowers: [
@@ -123,6 +126,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "trees",
     width: 18,
     height: 18,
+    requiredTier: "base",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 17, 0, "path"));
@@ -149,7 +153,7 @@ export const DEMOS: DemoDefinition[] = [
       for (let y = 13; y < 15; y++) for (let x = 2; x < 4; x++) reserved.push({ x, y });
       for (let y = 2; y < 4; y++) for (let x = 13; x < 15; x++) reserved.push({ x, y });
       for (let y = 7; y <= 10; y++) for (let x = 7; x <= 10; x++) reserved.push({ x, y });
-      cells.push(...fillGrass(18, 18, 55, 30, reserved));
+      cells.push(...fillGrass(18, 18, 80, 20, reserved));
       return {
         cells,
         mowers: [
@@ -167,6 +171,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "route",
     width: 22,
     height: 22,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       // Perimeter path
@@ -218,6 +223,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "building",
     width: 25,
     height: 25,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       // Perimeter
@@ -259,7 +265,7 @@ export const DEMOS: DemoDefinition[] = [
       for (let y = 9; y <= 10; y++) for (let x = 9; x <= 11; x++) reserved.push({ x, y });
       for (let y = 14; y <= 15; y++) for (let x = 13; x <= 15; x++) reserved.push({ x, y });
       for (let x = 2; x <= 22; x++) reserved.push({ x, y: 12 });
-      cells.push(...fillGrass(25, 25, 50, 35, reserved));
+      cells.push(...fillGrass(25, 25, 80, 20, reserved));
       return {
         cells,
         mowers: [
@@ -277,6 +283,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "bot",
     width: 8,
     height: 8,
+    requiredTier: "base",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 7, 0, "path"));
@@ -307,6 +314,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "building",
     width: 40,
     height: 40,
+    requiredTier: "premium",
     build: () => {
       const cells: DemoCell[] = [];
       // Perimeter
@@ -406,6 +414,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "trees",
     width: 35,
     height: 35,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       // Perimeter
@@ -500,6 +509,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "leaf",
     width: 45,
     height: 45,
+    requiredTier: "premium",
     build: () => {
       const cells: DemoCell[] = [];
       // Perimeter
@@ -575,6 +585,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "leaf",
     width: 25,
     height: 25,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 24, 0, "path"));
@@ -636,6 +647,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "building",
     width: 30,
     height: 30,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 29, 0, "path"));
@@ -690,7 +702,7 @@ export const DEMOS: DemoDefinition[] = [
       for (let y = 23; y <= 26; y++) for (let x = 23; x <= 27; x++) reserved.push({ x, y });
       for (let y = 16; y <= 17; y++) for (let x = 10; x <= 11; x++) reserved.push({ x, y });
       reserved.push({ x: 25, y: 16 }, { x: 26, y: 16 }, { x: 25, y: 17 });
-      cells.push(...fillGrass(30, 30, 40, 20, reserved));
+      cells.push(...fillGrass(30, 30, 80, 20, reserved));
       return {
         cells,
         mowers: [
@@ -708,6 +720,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "trees",
     width: 28,
     height: 28,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 27, 0, "path"));
@@ -779,6 +792,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "leaf",
     width: 35,
     height: 35,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 34, 0, "path"));
@@ -863,6 +877,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "route",
     width: 32,
     height: 32,
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 31, 0, "path"));

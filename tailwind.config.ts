@@ -10,41 +10,41 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0a0e1a",
-        surface: "#0f172a",
-        border: "#1e293b",
+        background: "var(--background)",
+        surface: "var(--surface)",
+        border: "var(--border)",
         primary: {
-          DEFAULT: "#22c55e",
+          DEFAULT: "var(--primary)",
           foreground: "#0a0e1a",
         },
         secondary: {
-          DEFAULT: "#3b82f6",
+          DEFAULT: "var(--secondary)",
           foreground: "#f8fafc",
         },
         accent: {
-          DEFAULT: "#fbbf24",
+          DEFAULT: "var(--accent)",
           foreground: "#0a0e1a",
         },
         muted: {
-          DEFAULT: "#1e293b",
-          foreground: "#94a3b8",
+          DEFAULT: "var(--border)",
+          foreground: "var(--muted-foreground)",
         },
-        foreground: "#f8fafc",
-        "muted-foreground": "#94a3b8",
+        foreground: "var(--foreground)",
+        "muted-foreground": "var(--muted-foreground)",
         card: {
-          DEFAULT: "#0f172a",
-          foreground: "#f8fafc",
+          DEFAULT: "var(--card)",
+          foreground: "var(--foreground)",
         },
         popover: {
-          DEFAULT: "#0f172a",
-          foreground: "#f8fafc",
+          DEFAULT: "var(--card)",
+          foreground: "var(--foreground)",
         },
         destructive: {
-          DEFAULT: "#ef4444",
+          DEFAULT: "var(--destructive)",
           foreground: "#f8fafc",
         },
-        input: "#1e293b",
-        ring: "#22c55e",
+        input: "var(--input)",
+        ring: "var(--ring)",
       },
       fontFamily: {
         mono: ["var(--font-jetbrains-mono)", "monospace"],
