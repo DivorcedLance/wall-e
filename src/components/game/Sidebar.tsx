@@ -24,6 +24,8 @@ import {
   CalendarClock,
   DollarSign,
   Crown,
+  Activity,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +48,8 @@ import { useContextStore } from "@/lib/store/contextStore";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { TIER_CONFIGS } from "@/lib/types";
 import type { ClientTier, TierConfig, MowerTier } from "@/lib/types";
+import { TelemetryModal } from "@/components/game/TelemetryModal";
+import { AnalyticsCard } from "@/components/game/AnalyticsCard";
 
 declare global {
   interface WindowEventMap {
@@ -139,6 +143,7 @@ export function Sidebar() {
   const [showAdd, setShowAdd] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const [telemetryOpen, setTelemetryOpen] = useState(false);
 
   const updateClientTier = useContextStore((s) => s.updateClientTier);
 
@@ -429,6 +434,12 @@ export function Sidebar() {
                               window.dispatchEvent(new CustomEvent("walle:center-mower", { detail: { id: m.id } }));
                             }}>
                             <Crosshair className="h-3 w-3" />
+                          </Button>
+                        </Tooltip>
+                        <Tooltip content="Telemetría">
+                          <Button size="icon" variant="ghost" className="h-5 w-5"
+                            onClick={(e) => { e.stopPropagation(); setTelemetryOpen(true); }}>
+                            <Activity className="h-3 w-3 text-primary" />
                           </Button>
                         </Tooltip>
                         <Tooltip content="Eliminar">
@@ -1009,6 +1020,8 @@ export function Sidebar() {
             );
           })()}
 
+          <AnalyticsCard />
+
           <Card>
             <CardHeader className="p-2.5 pb-1.5">
               <CardTitle className="flex items-center gap-1.5 text-xs">
@@ -1110,6 +1123,7 @@ export function Sidebar() {
           </Card>
         </TabsContent>
       </Tabs>
+      <TelemetryModal open={telemetryOpen} onOpenChange={setTelemetryOpen} />
     </aside>
   );
 }
