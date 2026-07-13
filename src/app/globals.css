@@ -47,15 +47,7 @@
     min-height: 100%;
   }
 
-  html.dark body {
-    height: 100vh;
-    max-height: 100vh;
-    overflow: hidden;
-  }
 
-  html.light body {
-    overflow: auto;
-  }
 }
 
 @layer utilities {
