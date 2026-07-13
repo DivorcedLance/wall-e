@@ -492,7 +492,10 @@ export function Sidebar() {
                   {commandMode ? "Cancelar envío" : "Enviar a celda"}
                 </Button>
                 <Button size="sm" variant="outline" className="w-full h-7 text-[11px]"
-                  onClick={() => setPlaying(!isPlaying)}>
+                  onClick={() => {
+                    console.log("[Sidebar] Play/Pause clicked, current isPlaying:", isPlaying);
+                    setPlaying(!isPlaying);
+                  }}>
                   {isPlaying ? <PauseCircle className="h-3 w-3 mr-1" /> : <PlayCircle className="h-3 w-3 mr-1" />}
                   {isPlaying ? "Pausar" : "Reanudar"}
                 </Button>
@@ -567,7 +570,10 @@ export function Sidebar() {
                     size="sm"
                     variant="outline"
                     className="h-6 text-[10px] px-2"
-                    onClick={() => state.initFleet()}
+                    onClick={() => {
+                      console.log("[Sidebar] Calcular clicked, calling initFleet");
+                      useSimulationStore.getState().initFleet();
+                    }}
                     disabled={!state.mowers.length || !state.stations.length}
                   >
                     Calcular
@@ -833,7 +839,10 @@ export function Sidebar() {
                   size="sm"
                   variant="outline"
                   className="w-full h-7 text-[11px]"
-                  onClick={() => state.initFleet()}
+                  onClick={() => {
+                    console.log("[Sidebar] Recalcular estrategia clicked, calling initFleet");
+                    useSimulationStore.getState().initFleet();
+                  }}
                 >
                   <Route className="h-3 w-3 mr-1" />
                   Recalcular estrategia

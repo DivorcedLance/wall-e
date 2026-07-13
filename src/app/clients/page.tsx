@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Building2, Mail, Phone, MapPin, Calendar, Crown, ExternalLink } from "lucide-react";
+import { ArrowLeft, Building2, Mail, Phone, MapPin, Calendar, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -187,10 +187,6 @@ export default function ClientsPage() {
               {FAKE_CLIENTS.length} clientes registrados · {FAKE_CLIENTS.filter((c) => c.status === "active").length} activos
             </p>
           </div>
-          <Badge variant="outline" className="text-xs">
-            <Crown className="h-3 w-3 mr-1" />
-            Ruta secreta
-          </Badge>
         </div>
 
         {/* Summary Cards */}
