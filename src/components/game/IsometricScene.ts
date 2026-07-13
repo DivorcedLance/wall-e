@@ -495,12 +495,23 @@ export class IsometricScene extends Phaser.Scene {
   private updateEntities() {
     const sim = useSimulationStore.getState();
     if (!sim.space) return;
-    if (!this.entityContainer) return;
+    if (!this.entityContainer) {
+      console.warn("[IsometricScene] updateEntities skipped: entityContainer is null", {
+        hasAdd: !!this.add,
+        mowers: sim.mowers.length,
+        stations: sim.stations.length,
+      });
+      return;
+    }
     const seen = new Set<string>();
     for (const mower of sim.mowers) {
       seen.add(mower.id);
       let sprite = this.mowerSprites.get(mower.id);
       if (!sprite) {
+        if (!this.add) {
+          console.warn("[IsometricScene] createMowerSprite skipped: this.add is null", { mowerId: mower.id });
+          continue;
+        }
         sprite = this.createMowerSprite(mower);
         this.entityContainer.add(sprite);
         this.mowerSprites.set(mower.id, sprite);
@@ -520,6 +531,10 @@ export class IsometricScene extends Phaser.Scene {
       seenStations.add(station.id);
       let sprite = this.stationSprites.get(station.id);
       if (!sprite) {
+        if (!this.add) {
+          console.warn("[IsometricScene] createStationSprite skipped: this.add is null", { stationId: station.id });
+          continue;
+        }
         sprite = this.createStationSprite();
         this.entityContainer.add(sprite);
         this.stationSprites.set(station.id, sprite);
@@ -536,6 +551,10 @@ export class IsometricScene extends Phaser.Scene {
   }
 
   private createMowerSprite(_mower: Mower): Phaser.GameObjects.Container {
+    if (!this.add) {
+      console.warn("[IsometricScene] createMowerSprite: this.add is null", { mowerId: _mower.id });
+      return null as any;
+    }
     const container = this.add.container(0, 0);
     const shadow = this.add.ellipse(0, 6, 22, 8, 0x000000, 0.35);
     const body = this.add.graphics();
@@ -699,6 +718,10 @@ export class IsometricScene extends Phaser.Scene {
   }
 
   private createStationSprite(): Phaser.GameObjects.Container {
+    if (!this.add) {
+      console.warn("[IsometricScene] createStationSprite: this.add is null");
+      return null as any;
+    }
     const container = this.add.container(0, 0);
     const shadow = this.add.ellipse(0, 8, 24, 8, 0x000000, 0.35);
     const pad = this.add.graphics();

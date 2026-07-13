@@ -1,25 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { Bot, Map, Route, Zap, Clock, Shield, ArrowRight, Crown, Sun, Moon, Menu, X } from "lucide-react";
+import { Map, Route, Zap, Clock, Shield, ArrowRight, Crown, Sun, Moon, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "@/components/ThemeProvider";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export default function LandingLayout({ children }: { children: React.ReactNode }) {
   const { theme, toggle } = useTheme();
   const pathname = usePathname();
   const isSimulator = pathname === "/simulador" || pathname === "/editor";
   const [mobileOpen, setMobileOpen] = useState(false);
+  const logoSrc = theme === "dark" ? "/walle_logo_dark.svg" : "/walle_logo_light.svg";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-border bg-surface/80 backdrop-blur sticky top-0 z-40">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Bot className="h-5 w-5" />
-            </div>
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-9 w-9" />
             <span className="text-lg font-bold">W.A.L.L.-E.</span>
           </Link>
 
@@ -81,14 +81,16 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
 }
 
 export function LandingHero() {
+  const { theme } = useTheme();
+  const logoSrc = theme === "dark" ? "/walle_logo_dark.svg" : "/walle_logo_light.svg";
   return (
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24 md:py-32 text-center">
-          <div className="mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <Bot className="h-7 w-7 sm:h-8 sm:w-8" />
+          <div className="mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-primary/10">
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-10 w-10 sm:h-12 sm:w-12" />
           </div>
           <h1 className="mt-6 text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-tight">
             Orquestación inteligente de
@@ -152,7 +154,7 @@ export function LandingHero() {
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto flex flex-col sm:flex-row max-w-6xl items-center justify-between px-4 sm:px-6 py-6 gap-4 sm:gap-0">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Bot className="h-4 w-4" />
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-4 w-4" />
             <span>W.A.L.L.-E.</span>
           </div>
           <div className="flex gap-4 text-sm text-muted-foreground">

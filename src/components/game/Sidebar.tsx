@@ -1043,7 +1043,7 @@ export function Sidebar() {
                 <Slider
                   value={config.mowThreshold}
                   onValueChange={(v) => setConfig({ mowThreshold: v })}
-                  min={5}
+                  min={1}
                   max={100}
                 />
               </div>
