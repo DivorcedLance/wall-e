@@ -8,8 +8,8 @@ export const metadata = {
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6 text-center">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-        <img src="/walle_logo_dark.svg" alt="W.A.L.L.-E." className="h-10 w-10" />
+      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10">
+        <img src="/walle_logo_dark.svg" alt="W.A.L.L.-E." className="h-14 w-14" />
       </div>
       <h1 className="mt-6 text-3xl font-bold text-foreground">404</h1>
       <p className="mt-2 max-w-md text-muted-foreground">

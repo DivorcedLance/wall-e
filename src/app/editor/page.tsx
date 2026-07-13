@@ -109,8 +109,8 @@ export default function EditorPage() {
       <div className="flex h-screen items-center justify-center bg-background p-6">
         <Card className="max-w-md">
           <CardContent className="space-y-4 p-6 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-              <img src={logoSrc} alt="W.A.L.L.-E." className="h-8 w-8" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10">
+              <img src={logoSrc} alt="W.A.L.L.-E." className="h-12 w-12" />
             </div>
             <div className="space-y-1">
               <h2 className="text-lg font-semibold">Sin contexto activo</h2>

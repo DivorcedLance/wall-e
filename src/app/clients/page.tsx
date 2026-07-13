@@ -161,7 +161,7 @@ export default function ClientsPage() {
       <header className="border-b border-border bg-surface/80 backdrop-blur sticky top-0 z-40">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <img src={logoSrc} alt="W.A.L.L.-E." className="h-9 w-9" />
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-11 w-11" />
             <span className="text-lg font-bold">W.A.L.L.-E.</span>
           </Link>
           <nav className="flex items-center gap-4 text-sm text-muted-foreground">

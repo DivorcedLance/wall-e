@@ -19,7 +19,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
       <header className="border-b border-border bg-surface/80 backdrop-blur sticky top-0 z-40">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <img src={logoSrc} alt="W.A.L.L.-E." className="h-9 w-9" />
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-11 w-11" />
             <span className="text-lg font-bold">W.A.L.L.-E.</span>
           </Link>
 
@@ -89,8 +89,8 @@ export function LandingHero() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-24 md:py-32 text-center">
-          <div className="mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-primary/10">
-            <img src={logoSrc} alt="W.A.L.L.-E." className="h-10 w-10 sm:h-12 sm:w-12" />
+          <div className="mx-auto flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-2xl bg-primary/10">
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-16 w-16 sm:h-20 sm:w-20" />
           </div>
           <h1 className="mt-6 text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-tight">
             Orquestación inteligente de
@@ -154,7 +154,7 @@ export function LandingHero() {
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto flex flex-col sm:flex-row max-w-6xl items-center justify-between px-4 sm:px-6 py-6 gap-4 sm:gap-0">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <img src={logoSrc} alt="W.A.L.L.-E." className="h-4 w-4" />
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-6 w-6" />
             <span>W.A.L.L.-E.</span>
           </div>
           <div className="flex gap-4 text-sm text-muted-foreground">

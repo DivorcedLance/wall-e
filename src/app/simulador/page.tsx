@@ -92,7 +92,7 @@ export default function SimuladorPage() {
       <header className="flex shrink-0 items-center justify-between border-b border-border bg-surface px-4 sm:px-6 py-3">
         <div className="flex items-center gap-3 min-w-0">
           <Link href="/" className="flex items-center gap-3">
-            <img src={logoSrc} alt="W.A.L.L.-E." className="h-9 w-9" />
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-11 w-11" />
             <div className="min-w-0">
               <h1 className="text-base font-semibold leading-none truncate">W.A.L.L.-E.</h1>
               <p className="text-xs text-muted-foreground truncate">Editor de podadoras</p>
