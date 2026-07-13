@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bot, ArrowRight, Sun, Moon, ArrowLeft } from "lucide-react";
+import { ArrowRight, Sun, Moon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -66,6 +66,7 @@ export default function SimuladorPage() {
   };
 
   const { theme, toggle } = useTheme();
+  const logoSrc = theme === "dark" ? "/walle_logo_dark.svg" : "/walle_logo_light.svg";
 
   if (!hydrated) {
     return (
@@ -91,9 +92,7 @@ export default function SimuladorPage() {
       <header className="flex shrink-0 items-center justify-between border-b border-border bg-surface px-4 sm:px-6 py-3">
         <div className="flex items-center gap-3 min-w-0">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Bot className="h-5 w-5" />
-            </div>
+            <img src={logoSrc} alt="W.A.L.L.-E." className="h-9 w-9" />
             <div className="min-w-0">
               <h1 className="text-base font-semibold leading-none truncate">W.A.L.L.-E.</h1>
               <p className="text-xs text-muted-foreground truncate">Editor de podadoras</p>

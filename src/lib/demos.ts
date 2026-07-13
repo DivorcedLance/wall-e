@@ -126,7 +126,7 @@ export const DEMOS: DemoDefinition[] = [
     emoji: "trees",
     width: 18,
     height: 18,
-    requiredTier: "base",
+    requiredTier: "standard",
     build: () => {
       const cells: DemoCell[] = [];
       cells.push(...rect(0, 0, 17, 0, "path"));

@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bot } from "lucide-react";
+import { useTheme } from "@/components/ThemeProvider";
 
 export function SplashScreen({ onComplete }: { onComplete: () => void }) {
+  const { theme } = useTheme();
   const [phase, setPhase] = useState<"enter" | "show" | "exit">("enter");
+  const logoSrc = theme === "dark" ? "/walle_logo_dark.svg" : "/walle_logo_light.svg";
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("show"), 50);
@@ -20,11 +22,11 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
       }`}
     >
       <div
-        className={`flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-500 ${
+        className={`flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 transition-all duration-500 ${
           phase === "show" ? "scale-100 rotate-0" : "scale-75 rotate-12"
         }`}
       >
-        <Bot className="h-10 w-10" />
+        <img src={logoSrc} alt="W.A.L.L.-E." className="h-12 w-12" />
       </div>
       <h1
         className={`mt-5 text-2xl font-bold tracking-tight text-foreground transition-all duration-500 delay-100 ${

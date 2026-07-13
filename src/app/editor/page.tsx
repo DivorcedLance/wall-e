@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Bot, Monitor } from "lucide-react";
+import { ArrowLeft, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +11,7 @@ import { useSimulationStore } from "@/lib/store/simulationStore";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useHydrated } from "@/lib/hooks/useHydrated";
 import { useSaveShortcut } from "@/lib/hooks/useSaveShortcut";
+import { useTheme } from "@/components/ThemeProvider";
 import { ContextHeader } from "@/components/game/ContextHeader";
 import { Sidebar } from "@/components/game/Sidebar";
 import { CameraControls } from "@/components/game/CameraControls";
@@ -31,6 +32,8 @@ export default function EditorPage() {
   const activeSpaceId = useContextStore((s) => s.activeSpaceId);
   const space = useSimulationStore((s) => s.space);
   const loadSpace = useSimulationStore((s) => s.loadSpace);
+  const { theme } = useTheme();
+  const logoSrc = theme === "dark" ? "/walle_logo_dark.svg" : "/walle_logo_light.svg";
 
   useEffect(() => {
     if (hydrated && !loaded) {
@@ -106,8 +109,8 @@ export default function EditorPage() {
       <div className="flex h-screen items-center justify-center bg-background p-6">
         <Card className="max-w-md">
           <CardContent className="space-y-4 p-6 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Bot className="h-6 w-6" />
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+              <img src={logoSrc} alt="W.A.L.L.-E." className="h-8 w-8" />
             </div>
             <div className="space-y-1">
               <h2 className="text-lg font-semibold">Sin contexto activo</h2>
