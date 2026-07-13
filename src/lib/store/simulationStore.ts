@@ -610,8 +610,12 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
           }
         }
         const remainingDrain = estimateTourDrain(mower.x, mower.y, remainingTiles, 0, drainPerCell);
-        const returnDrain = (Math.abs(mower.x - assignedStation.x) + Math.abs(mower.y - assignedStation.y)) * drainPerCell * 1.2 + 5;
-        if (mower.battery <= remainingDrain + returnDrain) {
+        // If mower is already at the station, return drain is 0
+        const distToStation = Math.abs(mower.x - assignedStation.x) + Math.abs(mower.y - assignedStation.y);
+        const returnDrain = distToStation * drainPerCell * 1.2 + 5;
+        // Only check battery if mower is NOT at the station (away from it)
+        // If at station with full battery, let it start operating
+        if (distToStation > 0 && mower.battery <= remainingDrain + returnDrain) {
           // Can't complete trip — return to station
           mower.status = "returning";
           mower.path = findPath(mower.x, mower.y, assignedStation.x, assignedStation.y, updatedCells, space.width, space.height);
