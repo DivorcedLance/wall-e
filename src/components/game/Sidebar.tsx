@@ -94,6 +94,16 @@ function hmToMS(h: number, m: number): number {
   return (h * 60 + m) * 60 * 1000;
 }
 
+// Exponential mapping: slider 0-100 → rate 0.01-100
+function sliderToGrowth(slider: number): number {
+  if (slider <= 0) return 0;
+  return 0.01 * Math.pow(10, slider / 50);
+}
+function growthToSlider(rate: number): number {
+  if (rate <= 0) return 0;
+  return Math.min(100, Math.max(0, 50 * Math.log10(rate / 0.01)));
+}
+
 export function Sidebar() {
   const tool = useEditorStore((s) => s.tool);
   const setTool = useEditorStore((s) => s.setTool);
@@ -1010,12 +1020,12 @@ export function Sidebar() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label className="text-[10px] text-muted-foreground">Tasa de crecimiento</Label>
-                  <span className="font-mono text-[10px] text-primary">{config.grassGrowthRatePerSecond.toFixed(2)} %/s</span>
+                  <span className="font-mono text-[10px] text-primary">{config.grassGrowthRatePerSecond.toFixed(3)} %/s</span>
                 </div>
                 <Slider
-                  value={Math.round(config.grassGrowthRatePerSecond * 100)}
-                  onValueChange={(v) => setConfig({ grassGrowthRatePerSecond: v / 100 })}
-                  min={1}
+                  value={growthToSlider(config.grassGrowthRatePerSecond)}
+                  onValueChange={(v) => setConfig({ grassGrowthRatePerSecond: sliderToGrowth(v) })}
+                  min={0}
                   max={100}
                 />
               </div>

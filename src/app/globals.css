@@ -19,18 +19,18 @@
   }
 
   html.light {
-    --background: #f1f5f9;
+    --background: #f8fafc;
     --surface: #ffffff;
-    --border: #cbd5e1;
-    --primary: #16a34a;
+    --border: #e2e8f0;
+    --primary: #22c55e;
     --secondary: #3b82f6;
-    --accent: #f59e0b;
+    --accent: #fbbf24;
     --foreground: #0f172a;
     --muted-foreground: #64748b;
     --card: #ffffff;
-    --destructive: #dc2626;
+    --destructive: #ef4444;
     --input: #e2e8f0;
-    --ring: #16a34a;
+    --ring: #22c55e;
   }
 
   * {

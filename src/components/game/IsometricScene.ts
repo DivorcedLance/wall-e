@@ -339,6 +339,14 @@ export class IsometricScene extends Phaser.Scene {
   }
 
   private redrawMap() {
+    if (!this.cameras?.main) {
+      console.warn("[IsometricScene] redrawMap skipped: cameras.main is undefined", {
+        cameras: this.cameras,
+        hasMapGraphics: !!this.mapGraphics,
+        hasEntityContainer: !!this.entityContainer,
+      });
+      return;
+    }
     const sim = useSimulationStore.getState();
     if (!sim.space) return;
     const g = this.mapGraphics;
