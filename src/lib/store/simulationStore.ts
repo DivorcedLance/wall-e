@@ -446,7 +446,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       if (!st) return m;
       return {
         ...m, x: st.x, y: st.y, fromX: st.x, fromY: st.y, moveT: 1,
-        status: "idle" as const, battery: state.config.batteryCapacity,
+        status: "operating" as const, battery: state.config.batteryCapacity,
         path: [], pathIndex: 0,
         assignedStationId: st.id,
         color: m.color ?? MOWER_PALETTE[i % MOWER_PALETTE.length],
