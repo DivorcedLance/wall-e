@@ -354,7 +354,8 @@ export class IsometricScene extends Phaser.Scene {
         const cx = pos.x;
         const cy = pos.y;
         if (cell.type === "empty") {
-          g.fillStyle(0x050810, 1);
+          const isDark = document.documentElement.classList.contains("dark");
+          g.fillStyle(isDark ? 0x050810 : 0xf1f5f9, 1);
           g.beginPath();
           g.moveTo(cx, cy - TILE_HEIGHT / 2);
           g.lineTo(cx + TILE_WIDTH / 2, cy);
@@ -424,7 +425,8 @@ export class IsometricScene extends Phaser.Scene {
           g.fillTriangle(cx - 8, cy + 4, cx + 8, cy + 4, cx, cy - 8);
         }
         if (showGrid) {
-          g.lineStyle(1, 0x0a0e1a, 0.35);
+          const isDark = document.documentElement.classList.contains("dark");
+          g.lineStyle(1, isDark ? 0x0a0e1a : 0xcbd5e1, 0.35);
           g.beginPath();
           g.moveTo(cx, cy - TILE_HEIGHT / 2);
           g.lineTo(cx + TILE_WIDTH / 2, cy);

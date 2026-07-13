@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bot, Crown, Check, ArrowRight } from "lucide-react";
+import { Bot, Crown, Check, ArrowRight, Sun, Moon } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "@/components/ThemeProvider";
 import { useContextStore } from "@/lib/store/contextStore";
 import { useSimulationStore } from "@/lib/store/simulationStore";
 import { DEMOS } from "@/lib/demos";
@@ -34,6 +35,7 @@ function getUniqueName(existing: string[], prefix: string): string {
 export default function PricingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const { theme, toggle } = useTheme();
   const clients = useContextStore((s) => s.clients);
   const projects = useContextStore((s) => s.projects);
   const createClient = useContextStore((s) => s.createClient);
@@ -141,6 +143,9 @@ export default function PricingPage() {
             <Link href="/about" className="hover:text-foreground">Acerca de</Link>
             <Link href="/pricing" className="hover:text-foreground">Precios</Link>
             <Link href="/contact" className="hover:text-foreground">Contacto</Link>
+            <button onClick={toggle} className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted transition-colors" title={theme === "dark" ? "Modo claro" : "Modo oscuro"}>
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             <Link href="/simulador" className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
               Abrir Editor <ArrowRight className="h-3.5 w-3.5" />
             </Link>

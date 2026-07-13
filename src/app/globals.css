@@ -22,7 +22,7 @@
     --background: #f8fafc;
     --surface: #ffffff;
     --border: #e2e8f0;
-    --primary: #16a34a;
+    --primary: #15803d;
     --secondary: #2563eb;
     --accent: #d97706;
     --foreground: #0f172a;
@@ -30,7 +30,7 @@
     --card: #ffffff;
     --destructive: #dc2626;
     --input: #e2e8f0;
-    --ring: #16a34a;
+    --ring: #15803d;
   }
 
   * {

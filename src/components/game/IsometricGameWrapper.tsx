@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import * as Phaser from "phaser";
 import { IsometricScene } from "@/components/game/IsometricScene";
+import { useTheme } from "@/components/ThemeProvider";
 
 export interface PhaserBridge {
   paintAt: (x: number, y: number) => void;
@@ -11,15 +12,27 @@ export interface PhaserBridge {
   centerView: () => void;
 }
 
+const THEME_COLORS = {
+  dark: "#0a0e1a",
+  light: "#e2e8f0",
+};
+
 export function IsometricGameWrapper() {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<Phaser.Game | null>(null);
+  const { theme } = useTheme();
+
+  // Update background color when theme changes
+  useEffect(() => {
+    if (gameRef.current) {
+      const cam = gameRef.current.scene.scenes[0]?.cameras?.main;
+      if (cam) cam.setBackgroundColor(THEME_COLORS[theme]);
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (!containerRef.current) return;
     const parent = containerRef.current;
-    // Use the parent's actual size, but cap it to the viewport.
-    // This prevents the canvas from making the page scrollable.
     const computeSize = () => {
       const r = parent.getBoundingClientRect();
       const vw = window.innerWidth;
@@ -29,10 +42,11 @@ export function IsometricGameWrapper() {
       return { w, h };
     };
     const initial = computeSize();
+    const bgColor = THEME_COLORS[theme] ?? THEME_COLORS.dark;
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
       parent,
-      backgroundColor: "#0a0e1a",
+      backgroundColor: bgColor,
       scale: {
         mode: Phaser.Scale.NONE,
         autoCenter: Phaser.Scale.NO_CENTER,
@@ -63,6 +77,7 @@ export function IsometricGameWrapper() {
       game.destroy(true);
       gameRef.current = null;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
