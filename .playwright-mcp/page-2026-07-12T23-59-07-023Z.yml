@@ -1,0 +1,146 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e49]
+  - generic [ref=e50]:
+    - banner [ref=e51]:
+      - generic [ref=e52]:
+        - button "Volver al selector" [ref=e53] [cursor=pointer]:
+          - img
+        - separator [ref=e54]
+        - generic [ref=e55]:
+          - generic [ref=e56]: Cliente Demo
+          - img [ref=e57]
+          - generic [ref=e59]: Jardín Norte
+          - img [ref=e60]
+          - generic [ref=e62]:
+            - img [ref=e63]
+            - text: Arboleda Central
+        - generic [ref=e176]: • sin guardar
+      - generic [ref=e65]:
+        - button "Resetear vista" [ref=e66] [cursor=pointer]:
+          - img
+          - text: Reset
+        - button "Exportar JSON" [ref=e67] [cursor=pointer]:
+          - img
+          - text: Export
+        - button "Guardar" [ref=e68] [cursor=pointer]:
+          - img
+          - text: Guardar
+    - generic [ref=e69]:
+      - main [ref=e70]:
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - button "Zoom out" [ref=e75] [cursor=pointer]:
+              - img
+            - generic [ref=e77]: 120%
+            - button "Zoom in" [ref=e78] [cursor=pointer]:
+              - img
+            - button "Centrar vista" [ref=e80] [cursor=pointer]:
+              - img
+              - text: Centrar
+          - generic [ref=e81]:
+            - button "Pausar" [ref=e177] [cursor=pointer]:
+              - img
+            - img [ref=e84]
+            - combobox [ref=e87]:
+              - option "1x" [selected]
+              - option "2x"
+              - option "5x"
+              - option "10x"
+              - option "50x"
+              - option "100x"
+      - complementary [ref=e88]:
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - button "Herramientas" [ref=e91] [cursor=pointer]
+            - button "Entidades" [ref=e92] [cursor=pointer]
+            - button "Ajustes" [ref=e93] [cursor=pointer]
+          - generic [ref=e178]:
+            - generic [ref=e179]:
+              - heading "Podadoras (2)" [level=3] [ref=e182]:
+                - img [ref=e183]
+                - text: Podadoras (2)
+              - generic [ref=e186]:
+                - generic [ref=e187] [cursor=pointer]:
+                  - generic [ref=e188]:
+                    - generic [ref=e189]:
+                      - generic [ref=e190]: Podadora 1
+                      - generic [ref=e191]: operating
+                    - generic [ref=e192]:
+                      - generic [ref=e193]: (5,9)
+                      - generic [ref=e194]: ·
+                      - generic [ref=e195]: 100%
+                      - generic [ref=e196]: ·
+                      - generic [ref=e197]: standard
+                  - button "Centrar cámara" [ref=e198]:
+                    - img
+                  - button "Eliminar" [ref=e199]:
+                    - img
+                - generic [ref=e200] [cursor=pointer]:
+                  - generic [ref=e201]:
+                    - generic [ref=e202]:
+                      - generic [ref=e203]: Podadora 2
+                      - generic [ref=e204]: operating
+                    - generic [ref=e205]:
+                      - generic [ref=e206]: (12,9)
+                      - generic [ref=e207]: ·
+                      - generic [ref=e208]: 100%
+                      - generic [ref=e209]: ·
+                      - generic [ref=e210]: premium
+                  - button "Centrar cámara" [ref=e211]:
+                    - img
+                  - button "Eliminar" [ref=e212]:
+                    - img
+            - generic [ref=e237]:
+              - heading "Control — Podadora 1" [level=3] [ref=e239]:
+                - img [ref=e240]
+                - text: Control — Podadora 1
+              - generic [ref=e243]:
+                - generic [ref=e244]:
+                  - generic [ref=e245]:
+                    - generic [ref=e246]: Pos
+                    - generic [ref=e247]: 5,9
+                  - generic [ref=e248]:
+                    - generic [ref=e249]: Batería
+                    - generic [ref=e250]: 100%
+                  - generic [ref=e251]:
+                    - generic [ref=e252]: Estado
+                    - generic [ref=e253]: operating
+                - generic [ref=e254]:
+                  - button "Centrar" [ref=e255] [cursor=pointer]:
+                    - img
+                    - text: Centrar
+                  - button "Enviar" [ref=e256] [cursor=pointer]:
+                    - img
+                    - text: Enviar
+                - button "Pausar simulación" [ref=e257] [cursor=pointer]:
+                  - img
+                  - text: Pausar simulación
+            - generic [ref=e213]:
+              - heading "Estaciones (2)" [level=3] [ref=e216]:
+                - img [ref=e217]
+                - text: Estaciones (2)
+              - generic [ref=e219]:
+                - generic [ref=e220]:
+                  - generic [ref=e221]: (16, 16)
+                  - button [ref=e222] [cursor=pointer]:
+                    - img
+                - generic [ref=e223]:
+                  - generic [ref=e224]: (1, 1)
+                  - button [ref=e225] [cursor=pointer]:
+                    - img
+            - generic [ref=e226]:
+              - heading "Añadir manualmente" [level=3] [ref=e228]:
+                - img [ref=e229]
+                - text: Añadir manualmente
+              - generic [ref=e232]:
+                - generic [ref=e233]:
+                  - combobox [ref=e234]:
+                    - option "Base"
+                    - option "Standard" [selected]
+                    - option "Premium"
+                  - button "Mower" [ref=e235] [cursor=pointer]:
+                    - img
+                    - text: Mower
+                - button "Estación aleatoria" [ref=e236] [cursor=pointer]:
+                  - img
+                  - text: Estación aleatoria

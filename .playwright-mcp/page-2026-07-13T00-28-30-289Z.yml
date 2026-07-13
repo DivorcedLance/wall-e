@@ -1,0 +1,10 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - img [ref=e6]
+    - generic [ref=e9]:
+      - heading "Sin contexto activo" [level=2] [ref=e10]
+      - paragraph [ref=e11]: Selecciona un cliente, proyecto y espacio antes de entrar al editor.
+    - button "Volver al selector" [ref=e12] [cursor=pointer]:
+      - img
+      - text: Volver al selector
+  - alert [ref=e13]

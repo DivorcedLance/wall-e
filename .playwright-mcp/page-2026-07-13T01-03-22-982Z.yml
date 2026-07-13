@@ -1,0 +1,110 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6]
+        - generic [ref=e9]:
+          - heading "W.A.L.L.-E." [level=1] [ref=e10]
+          - paragraph [ref=e11]: Editor isométrico de podadoras autónomas
+      - generic [ref=e12]:
+        - img [ref=e13]
+        - generic [ref=e16]: v0.1.0 — offline
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - heading "Contexto de trabajo" [level=2] [ref=e21]
+        - paragraph [ref=e22]: Selecciona o crea el cliente, proyecto y espacio con el que deseas trabajar.
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]:
+              - img [ref=e27]
+              - text: Cliente
+            - button "Nuevo" [ref=e30] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - generic [ref=e31]:
+            - combobox [ref=e32]:
+              - option "Selecciona un cliente" [disabled]
+              - option "Test Cliente (base)" [selected]
+            - button "Eliminar cliente" [ref=e55] [cursor=pointer]:
+              - img
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - img [ref=e36]
+              - text: Proyecto
+            - button "Nuevo" [ref=e56] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - generic [ref=e38]:
+            - combobox [ref=e39]:
+              - option "Selecciona un proyecto" [disabled]
+              - option "Test Proyecto" [selected]
+            - button "Eliminar proyecto" [ref=e60] [cursor=pointer]:
+              - img
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - img [ref=e43]
+              - text: Espacio
+            - button "Nuevo" [active] [ref=e61] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - combobox [ref=e46]:
+            - option "Selecciona un espacio" [disabled] [selected]
+          - generic [ref=e72]:
+            - textbox "Nombre del espacio" [ref=e73]
+            - generic [ref=e74]:
+              - generic [ref=e75]:
+                - img [ref=e76]
+                - text: Empezar desde una demo
+              - generic [ref=e78]:
+                - button "En blanco 20×20 vacío" [ref=e79] [cursor=pointer]:
+                  - generic [ref=e80]:
+                    - img [ref=e81]
+                    - generic [ref=e83]: En blanco
+                  - generic [ref=e84]: 20×20 vacío
+                - button "Campo Abierto 20×20" [ref=e85] [cursor=pointer]:
+                  - generic [ref=e86]:
+                    - img [ref=e87]
+                    - generic [ref=e90]: Campo Abierto
+                  - generic [ref=e91]: 20×20
+                - button "Arboleda Central 18×18" [ref=e92] [cursor=pointer]:
+                  - generic [ref=e93]:
+                    - img [ref=e94]
+                    - generic [ref=e97]: Arboleda Central
+                  - generic [ref=e98]: 18×18
+                - button "Laberinto Verde 22×22" [ref=e99] [cursor=pointer]:
+                  - generic [ref=e100]:
+                    - img [ref=e101]
+                    - generic [ref=e105]: Laberinto Verde
+                  - generic [ref=e106]: 22×22
+                - button "Instalación Completa 25×25" [ref=e107] [cursor=pointer]:
+                  - generic [ref=e108]:
+                    - img [ref=e109]
+                    - generic [ref=e113]: Instalación Completa
+                  - generic [ref=e114]: 25×25
+                - button "Prueba Rápida 8×8" [ref=e115] [cursor=pointer]:
+                  - generic [ref=e116]:
+                    - img [ref=e117]
+                    - generic [ref=e120]: Prueba Rápida
+                  - generic [ref=e121]: 8×8
+            - generic [ref=e122]:
+              - generic [ref=e123]:
+                - text: Ancho
+                - spinbutton [ref=e124]: "20"
+              - generic [ref=e125]:
+                - text: Alto
+                - spinbutton [ref=e126]: "20"
+            - button "Crear espacio" [ref=e127] [cursor=pointer]
+      - generic [ref=e64] [cursor=pointer]:
+        - generic [ref=e65]:
+          - img [ref=e66]
+          - heading "Configuración del Proyecto" [level=3] [ref=e69]
+        - img [ref=e70]
+      - generic [ref=e47]:
+        - button "Entrar al Editor" [disabled]:
+          - text: Entrar al Editor
+          - img
+        - paragraph [ref=e48]: Selecciona o crea un espacio
+  - alert [ref=e49]

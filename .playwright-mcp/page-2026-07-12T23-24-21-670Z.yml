@@ -1,0 +1,67 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - img [ref=e6]
+        - generic [ref=e9]:
+          - heading "W.A.L.L.-E." [level=1] [ref=e10]
+          - paragraph [ref=e11]: Editor isométrico de podadoras autónomas
+      - generic [ref=e12]:
+        - img [ref=e13]
+        - generic [ref=e16]: v0.1.0 — offline
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - heading "Contexto de trabajo" [level=2] [ref=e21]
+        - paragraph [ref=e22]: Selecciona o crea el cliente, proyecto y espacio con el que deseas trabajar.
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - generic [ref=e26]:
+              - img [ref=e27]
+              - text: Cliente
+            - button "Nuevo" [ref=e30] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - generic [ref=e31]:
+            - combobox [ref=e32]:
+              - option "Selecciona un cliente" [disabled]
+              - option "Cliente Demo (base)" [selected]
+            - button "Eliminar cliente" [ref=e55] [cursor=pointer]:
+              - img
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - img [ref=e36]
+              - text: Proyecto
+            - button "Nuevo" [ref=e56] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - generic [ref=e38]:
+            - combobox [ref=e39]:
+              - option "Selecciona un proyecto" [disabled]
+              - option "Jardín Norte" [selected]
+            - button "Eliminar proyecto" [ref=e60] [cursor=pointer]:
+              - img
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - img [ref=e43]
+              - text: Espacio
+            - button "Nuevo" [ref=e61] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - generic [ref=e45]:
+            - combobox [ref=e46]:
+              - option "Selecciona un espacio" [disabled]
+              - option "Patio Principal (20×20)" [selected]
+            - button "Eliminar espacio" [ref=e80] [cursor=pointer]:
+              - img
+      - generic [ref=e64] [cursor=pointer]:
+        - generic [ref=e65]:
+          - img [ref=e66]
+          - heading "Configuración del Proyecto" [level=3] [ref=e69]
+        - img [ref=e70]
+      - button "Entrar al Editor" [ref=e81] [cursor=pointer]:
+        - text: Entrar al Editor
+        - img
+  - alert [ref=e49]

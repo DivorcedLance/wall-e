@@ -1,0 +1,66 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e13]
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - img [ref=e18]
+        - generic [ref=e21]:
+          - heading "W.A.L.L.-E." [level=1] [ref=e22]
+          - paragraph [ref=e23]: Editor isométrico de podadoras autónomas
+      - generic [ref=e24]:
+        - img [ref=e25]
+        - generic [ref=e28]: v0.1.0 — offline
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - heading "Contexto de trabajo" [level=2] [ref=e33]
+        - paragraph [ref=e34]: Selecciona o crea el cliente, proyecto y espacio con el que deseas trabajar.
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e38]:
+              - img [ref=e39]
+              - text: Cliente
+            - button "Nuevo" [ref=e42] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - generic [ref=e43]:
+            - combobox [ref=e44]:
+              - option "Selecciona un cliente" [disabled]
+              - option "Test Cliente (base)" [selected]
+            - button "Eliminar cliente" [ref=e61] [cursor=pointer]:
+              - img
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]:
+              - img [ref=e48]
+              - text: Proyecto
+            - button "Nuevo" [ref=e62] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - generic [ref=e50]:
+            - combobox [ref=e51]:
+              - option "Selecciona un proyecto" [disabled]
+              - option "Test Proyecto" [selected]
+            - button "Eliminar proyecto" [ref=e63] [cursor=pointer]:
+              - img
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - img [ref=e55]
+              - text: Espacio
+            - button "Nuevo" [ref=e64] [cursor=pointer]:
+              - img
+              - text: Nuevo
+          - combobox [ref=e58]:
+            - option "Selecciona un espacio" [disabled] [selected]
+            - option "Test Espacio (8×8)"
+      - generic [ref=e67] [cursor=pointer]:
+        - generic [ref=e68]:
+          - img [ref=e69]
+          - heading "Configuración del Proyecto" [level=3] [ref=e72]
+        - img [ref=e73]
+      - generic [ref=e59]:
+        - button "Entrar al Editor" [disabled]:
+          - text: Entrar al Editor
+          - img
+        - paragraph [ref=e60]: Selecciona o crea un espacio

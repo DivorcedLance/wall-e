@@ -1,0 +1,117 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e49]
+  - generic [ref=e50]:
+    - banner [ref=e51]:
+      - generic [ref=e52]:
+        - button "Volver al selector" [ref=e53] [cursor=pointer]:
+          - img
+        - separator [ref=e54]
+        - generic [ref=e55]:
+          - generic [ref=e56]: Cliente Demo
+          - img [ref=e57]
+          - generic [ref=e59]: Jardín Norte
+          - img [ref=e60]
+          - generic [ref=e62]:
+            - img [ref=e63]
+            - text: Patio Principal
+        - generic [ref=e176]: • sin guardar
+      - generic [ref=e65]:
+        - button "Resetear vista" [ref=e66] [cursor=pointer]:
+          - img
+          - text: Reset
+        - button "Exportar JSON" [ref=e67] [cursor=pointer]:
+          - img
+          - text: Export
+        - button "Guardar" [ref=e68] [cursor=pointer]:
+          - img
+          - text: Guardar
+    - generic [ref=e69]:
+      - main [ref=e70]:
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - button "Zoom out" [ref=e75] [cursor=pointer]:
+              - img
+            - generic [ref=e77]: 100%
+            - button "Zoom in" [ref=e78] [cursor=pointer]:
+              - img
+            - button "Centrar vista" [ref=e80] [cursor=pointer]:
+              - img
+              - text: Centrar
+          - generic [ref=e81]:
+            - button "Pausar" [ref=e177] [cursor=pointer]:
+              - img
+            - img [ref=e84]
+            - combobox [ref=e87]:
+              - option "1x"
+              - option "2x"
+              - option "5x"
+              - option "10x"
+              - option "50x"
+              - option "100x" [selected]
+      - complementary [ref=e88]:
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - button "Herramientas" [ref=e91] [cursor=pointer]
+            - button "Entidades" [ref=e92] [cursor=pointer]
+            - button "Ajustes" [ref=e93] [cursor=pointer]
+          - generic [ref=e232]:
+            - generic [ref=e233]:
+              - heading "Paleta" [level=3] [ref=e235]:
+                - img [ref=e236]
+                - text: Paleta
+              - generic [ref=e240]:
+                - button "Cursor" [ref=e241] [cursor=pointer]:
+                  - img [ref=e242]
+                  - generic [ref=e244]: Cursor
+                - button "Césped" [ref=e245] [cursor=pointer]:
+                  - img [ref=e246]
+                  - generic [ref=e249]: Césped
+                - button "Camino" [ref=e250] [cursor=pointer]:
+                  - img [ref=e251]
+                  - generic [ref=e255]: Camino
+                - button "Flores" [ref=e256] [cursor=pointer]:
+                  - img [ref=e257]
+                  - generic [ref=e262]: Flores
+                - button "Edificio" [ref=e263] [cursor=pointer]:
+                  - img [ref=e264]
+                  - generic [ref=e268]: Edificio
+                - button "Obstáculo" [ref=e269] [cursor=pointer]:
+                  - img [ref=e270]
+                  - generic [ref=e272]: Obstáculo
+                - button "Árbol" [ref=e273] [cursor=pointer]:
+                  - img [ref=e274]
+                  - generic [ref=e277]: Árbol
+                - button "Agua" [ref=e278] [cursor=pointer]:
+                  - img [ref=e279]
+                  - generic [ref=e282]: Agua
+                - button "Grava/Arena" [ref=e283] [cursor=pointer]:
+                  - img [ref=e284]
+                  - generic [ref=e286]: Grava/Arena
+                - button "Carga" [ref=e287] [cursor=pointer]:
+                  - img [ref=e288]
+                  - generic [ref=e290]: Carga
+                - button "Vacío" [ref=e291] [cursor=pointer]:
+                  - img [ref=e292]
+                  - generic [ref=e297]: Vacío
+                - button "Podadora" [ref=e298] [cursor=pointer]:
+                  - img [ref=e299]
+                  - generic [ref=e302]: Podadora
+                - button "Borrar" [ref=e303] [cursor=pointer]:
+                  - img [ref=e304]
+                  - generic [ref=e307]: Borrar
+            - generic [ref=e314]:
+              - heading "Altura del césped" [level=3] [ref=e316]
+              - generic [ref=e317]:
+                - generic [ref=e318]:
+                  - generic [ref=e319]: Valor
+                  - generic [ref=e320]: 100%
+                - slider [ref=e321] [cursor=pointer]: "100"
+            - generic [ref=e308]:
+              - heading "Acciones" [level=3] [ref=e310]
+              - generic [ref=e311]:
+                - button "Colocar podadora (clic)" [ref=e312] [cursor=pointer]:
+                  - img
+                  - text: Colocar podadora (clic)
+                - button "Colocar estación (clic)" [ref=e313] [cursor=pointer]:
+                  - img
+                  - text: Colocar estación (clic)

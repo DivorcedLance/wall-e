@@ -1,0 +1,116 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e49]
+  - generic [ref=e131]:
+    - banner [ref=e132]:
+      - generic [ref=e133]:
+        - button "Volver al selector" [ref=e134] [cursor=pointer]:
+          - img
+        - separator [ref=e135]
+        - generic [ref=e136]:
+          - generic [ref=e137]: Test
+          - img [ref=e138]
+          - generic [ref=e140]: Test
+          - img [ref=e141]
+          - generic [ref=e143]:
+            - img [ref=e144]
+            - text: Test
+        - generic [ref=e257]: • sin guardar
+      - generic [ref=e146]:
+        - button "Resetear vista" [ref=e147] [cursor=pointer]:
+          - img
+          - text: Reset
+        - button "Exportar JSON" [ref=e148] [cursor=pointer]:
+          - img
+          - text: Export
+        - button "Guardar" [ref=e149] [cursor=pointer]:
+          - img
+          - text: Guardar
+    - generic [ref=e150]:
+      - main [ref=e151]:
+        - generic [ref=e154]:
+          - generic [ref=e155]:
+            - button "Zoom out" [ref=e156] [cursor=pointer]:
+              - img
+            - generic [ref=e158]: 100%
+            - button "Zoom in" [ref=e159] [cursor=pointer]:
+              - img
+            - button "Centrar vista" [ref=e161] [cursor=pointer]:
+              - img
+              - text: Centrar
+          - generic [ref=e162]:
+            - button "Pausar" [ref=e258] [cursor=pointer]:
+              - img
+            - img [ref=e165]
+            - combobox [ref=e168]:
+              - option "1x"
+              - option "2x"
+              - option "5x"
+              - option "10x"
+              - option "50x"
+              - option "100x" [selected]
+      - complementary [ref=e169]:
+        - generic [ref=e170]:
+          - generic [ref=e171]:
+            - button "Herramientas" [ref=e172] [cursor=pointer]
+            - button "Entidades" [ref=e173] [cursor=pointer]
+            - button "Ajustes" [ref=e174] [cursor=pointer]
+          - generic [ref=e259]:
+            - generic [ref=e260]:
+              - heading "Podadoras (2)" [level=3] [ref=e302]:
+                - img [ref=e264]
+                - text: Podadoras (2)
+              - generic [ref=e267]:
+                - generic [ref=e268] [cursor=pointer]:
+                  - generic [ref=e269]:
+                    - generic [ref=e270]:
+                      - generic [ref=e271]: Podadora 1
+                      - generic [ref=e272]: operating
+                    - generic [ref=e273]:
+                      - generic [ref=e274]: (3,7)
+                      - generic [ref=e275]: ·
+                      - generic [ref=e276]: 76%
+                      - generic [ref=e277]: ·
+                      - generic [ref=e278]: standard
+                  - button "Centrar cámara" [ref=e279]:
+                    - img
+                  - button "Eliminar" [ref=e280]:
+                    - img
+                - generic [ref=e303] [cursor=pointer]:
+                  - generic [ref=e304]:
+                    - generic [ref=e305]:
+                      - generic [ref=e306]: Podadora 2
+                      - generic [ref=e307]: charging
+                    - generic [ref=e308]:
+                      - generic [ref=e309]: (1,1)
+                      - generic [ref=e310]: ·
+                      - generic [ref=e311]: 58%
+                      - generic [ref=e312]: ·
+                      - generic [ref=e313]: standard
+                  - button "Centrar cámara" [ref=e314]:
+                    - img
+                  - button "Eliminar" [ref=e315]:
+                    - img
+            - generic [ref=e281]:
+              - heading "Estaciones (1)" [level=3] [ref=e284]:
+                - img [ref=e285]
+                - text: Estaciones (1)
+              - generic [ref=e288]:
+                - generic [ref=e289]: (1, 1)
+                - button [ref=e290] [cursor=pointer]:
+                  - img
+            - generic [ref=e291]:
+              - heading "Añadir manualmente" [level=3] [ref=e293]:
+                - img [ref=e294]
+                - text: Añadir manualmente
+              - generic [ref=e297]:
+                - generic [ref=e298]:
+                  - combobox [ref=e299]:
+                    - option "Base"
+                    - option "Standard" [selected]
+                    - option "Premium"
+                  - button "Mower" [ref=e300] [cursor=pointer]:
+                    - img
+                    - text: Mower
+                - button "Estación aleatoria" [ref=e301] [cursor=pointer]:
+                  - img
+                  - text: Estación aleatoria
