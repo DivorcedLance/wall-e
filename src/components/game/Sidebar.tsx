@@ -36,6 +36,7 @@ import { useSimulationStore } from "@/lib/store/simulationStore";
 import { TOOLS } from "@/lib/tools";
 import { cn } from "@/lib/utils";
 import { GRASS_COLOR_MID } from "@/lib/constants";
+import { sortTilesNearestNeighbor } from "@/lib/fleet";
 import type { MowerTier } from "@/lib/types";
 
 declare global {
@@ -118,12 +119,6 @@ export function Sidebar() {
   const [tier, setTier] = useState<MowerTier>("standard");
   const [tab, setTab] = useState("tools");
   const [showAdd, setShowAdd] = useState(false);
-  const [scheduleMode, setScheduleMode] = useState<"auto" | "interval" | "threshold" | "time_of_day">("auto");
-  const [scheduleIntervalH, setScheduleIntervalH] = useState(0);
-  const [scheduleIntervalM, setScheduleIntervalM] = useState(5);
-  const [scheduleThreshold, setScheduleThreshold] = useState(50);
-  const [scheduleTimeH, setScheduleTimeH] = useState(6);
-  const [scheduleTimeM, setScheduleTimeM] = useState(0);
 
   const state = useSimulationStore();
   const selectedMower = mowers.find((m) => m.id === selectedMowerId) ?? null;
@@ -586,20 +581,7 @@ export function Sidebar() {
                         const station = state.stations.find((s) => s.id === m.assignedStationId);
                         const tiles = m.coverageTiles ?? [];
                         if (!station || tiles.length === 0) continue;
-                        const sorted = [];
-                        const remaining = [...tiles];
-                        let cx = station.x, cy = station.y;
-                        while (remaining.length > 0) {
-                          let bestIdx = 0, bestD = Infinity;
-                          for (let i = 0; i < remaining.length; i++) {
-                            const d = Math.abs(remaining[i].x - cx) + Math.abs(remaining[i].y - cy);
-                            if (d < bestD) { bestD = d; bestIdx = i; }
-                          }
-                          sorted.push(remaining[bestIdx]);
-                          cx = remaining[bestIdx].x;
-                          cy = remaining[bestIdx].y;
-                          remaining.splice(bestIdx, 1);
-                        }
+                        const sorted = sortTilesNearestNeighbor(tiles, station);
                         state.setStrategyPath(m.id, sorted);
                       }
                     }}
@@ -624,8 +606,8 @@ export function Sidebar() {
                 <div className="space-y-1">
                   <Label className="text-[10px] text-muted-foreground">Modo</Label>
                   <select
-                    value={scheduleMode}
-                    onChange={(e) => setScheduleMode(e.target.value as "auto" | "interval" | "threshold" | "time_of_day")}
+                    value={config.scheduleMode}
+                    onChange={(e) => setConfig({ scheduleMode: e.target.value as "auto" | "interval" | "threshold" | "time_of_day" })}
                     className="flex h-8 w-full rounded-md border border-input bg-background px-2 text-xs appearance-none"
                   >
                     <option value="auto">Automático (por crecimiento)</option>
@@ -634,7 +616,7 @@ export function Sidebar() {
                     <option value="time_of_day">Hora del día</option>
                   </select>
                 </div>
-                {scheduleMode === "interval" && (
+                {config.scheduleMode === "interval" && (
                   <div className="space-y-1">
                     <Label className="text-[10px] text-muted-foreground">Intervalo</Label>
                     <div className="flex items-center gap-1.5">
@@ -643,8 +625,12 @@ export function Sidebar() {
                           type="number"
                           min={0}
                           max={23}
-                          value={scheduleIntervalH}
-                          onChange={(e) => setScheduleIntervalH(Number(e.target.value))}
+                          value={Math.floor(config.scheduleIntervalMs / 3600000)}
+                          onChange={(e) => {
+                            const h = Number(e.target.value);
+                            const m = Math.floor((config.scheduleIntervalMs % 3600000) / 60000);
+                            setConfig({ scheduleIntervalMs: (h * 60 + m) * 60 * 1000 });
+                          }}
                           className="h-7 text-xs font-mono"
                         />
                         <span className="text-[10px] text-muted-foreground">h</span>
@@ -654,8 +640,12 @@ export function Sidebar() {
                           type="number"
                           min={0}
                           max={59}
-                          value={scheduleIntervalM}
-                          onChange={(e) => setScheduleIntervalM(Number(e.target.value))}
+                          value={Math.floor((config.scheduleIntervalMs % 3600000) / 60000)}
+                          onChange={(e) => {
+                            const m = Number(e.target.value);
+                            const h = Math.floor(config.scheduleIntervalMs / 3600000);
+                            setConfig({ scheduleIntervalMs: (h * 60 + m) * 60 * 1000 });
+                          }}
                           className="h-7 text-xs font-mono"
                         />
                         <span className="text-[10px] text-muted-foreground">min</span>
@@ -663,29 +653,29 @@ export function Sidebar() {
                     </div>
                   </div>
                 )}
-                {scheduleMode === "threshold" && (
+                {config.scheduleMode === "threshold" && (
                   <div className="space-y-1.5">
                     <Label className="text-[10px] text-muted-foreground">Umbral de altura (%)</Label>
                     <div className="flex items-center gap-2">
                       <div className="flex-1">
                         <Slider
-                          value={scheduleThreshold}
-                          onValueChange={setScheduleThreshold}
+                          value={config.scheduleThresholdPct}
+                          onValueChange={(v) => setConfig({ scheduleThresholdPct: v })}
                           min={5}
                           max={100}
                         />
                       </div>
                       <span className="font-mono text-[11px] text-primary font-medium w-8 text-right">
-                        {scheduleThreshold}%
+                        {config.scheduleThresholdPct}%
                       </span>
                       <div
                         className="h-5 w-5 rounded border border-border shrink-0"
-                        style={{ backgroundColor: scheduleThreshold < 50 ? GRASS_COLOR_MID : scheduleThreshold < 75 ? "#15803d" : "#14532d" }}
+                        style={{ backgroundColor: config.scheduleThresholdPct < 50 ? GRASS_COLOR_MID : config.scheduleThresholdPct < 75 ? "#15803d" : "#14532d" }}
                       />
                     </div>
                   </div>
                 )}
-                {scheduleMode === "time_of_day" && (
+                {config.scheduleMode === "time_of_day" && (
                   <div className="space-y-1">
                     <Label className="text-[10px] text-muted-foreground">Hora de ejecución</Label>
                     <div className="flex items-center gap-1.5">
@@ -694,8 +684,8 @@ export function Sidebar() {
                           type="number"
                           min={0}
                           max={23}
-                          value={scheduleTimeH}
-                          onChange={(e) => setScheduleTimeH(Number(e.target.value))}
+                          value={config.scheduleHour}
+                          onChange={(e) => setConfig({ scheduleHour: Number(e.target.value) })}
                           className="h-7 text-xs font-mono"
                         />
                         <span className="text-[10px] text-muted-foreground">h</span>
@@ -705,8 +695,8 @@ export function Sidebar() {
                           type="number"
                           min={0}
                           max={59}
-                          value={scheduleTimeM}
-                          onChange={(e) => setScheduleTimeM(Number(e.target.value))}
+                          value={config.scheduleMinute}
+                          onChange={(e) => setConfig({ scheduleMinute: Number(e.target.value) })}
                           className="h-7 text-xs font-mono"
                         />
                         <span className="text-[10px] text-muted-foreground">min</span>
@@ -717,7 +707,7 @@ export function Sidebar() {
                     </p>
                   </div>
                 )}
-                {scheduleMode === "auto" && (
+                {config.scheduleMode === "auto" && (
                   <p className="text-[10px] text-muted-foreground">
                     Cada podadora espera a que el césped de su zona alcance el umbral de poda ({config.mowThreshold}%).
                     El tiempo de espera se calcula según la tasa de crecimiento.

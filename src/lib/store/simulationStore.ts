@@ -23,6 +23,7 @@ import type {
   MowerTier,
   PathPoint,
   ProjectConfig,
+  ScheduleMode,
   Space,
 } from "@/lib/types";
 
@@ -31,7 +32,8 @@ function resistanceFor(type: CellType): number {
   return Number.isFinite(r) ? r : Infinity;
 }
 
-/** Estimate total battery drain for a list of tiles starting from (sx,sy). */
+/** Estimate total battery drain for a list of tiles starting from (sx,sy).
+ *  Travel between tiles uses transit drain, mowing each tile uses mowing drain. */
 function estimateTourDrain(
   sx: number, sy: number,
   tiles: PathPoint[],
@@ -45,7 +47,47 @@ function estimateTourDrain(
     cx = tiles[i].x;
     cy = tiles[i].y;
   }
-  return totalDist * drainPerCell;
+  // Travel drain (transit) + mowing drain per tile
+  return totalDist * drainPerCell * BATTERY_TRANSIT_MULTIPLIER + (tiles.length - startIndex) * drainPerCell * BATTERY_MOWING_MULTIPLIER;
+}
+
+/** Check if a mower should be operating based on its schedule config. */
+function shouldOperate(
+  scheduleMode: ScheduleMode,
+  config: ProjectConfig,
+  simulatedTimeMs: number,
+  cells: Map<string, CellData>,
+  coverageTiles: PathPoint[],
+  lastScheduledRun: number | undefined,
+): boolean {
+  if (scheduleMode === "auto") return true;
+
+  if (scheduleMode === "interval") {
+    if (lastScheduledRun === undefined) return true;
+    return (simulatedTimeMs - lastScheduledRun) >= config.scheduleIntervalMs;
+  }
+
+  if (scheduleMode === "threshold") {
+    const now = Date.now();
+    for (const t of coverageTiles) {
+      const c = cells.get(`${t.x},${t.y}`);
+      if (c && c.type === "grass") {
+        const elapsed = (now - c.lastMowed) / 1000;
+        const estimated = Math.min(100, (elapsed * config.grassGrowthRatePerSecond * 100));
+        if (estimated >= config.scheduleThresholdPct) return true;
+      }
+    }
+    return false;
+  }
+
+  if (scheduleMode === "time_of_day") {
+    const totalSeconds = Math.floor(simulatedTimeMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    return hours === config.scheduleHour && minutes === config.scheduleMinute;
+  }
+
+  return true;
 }
 
 // ─── Store types ────────────────────────────────────────────────────────────
@@ -372,7 +414,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     });
 
     // Then: compute tours based on positioned mowers
-    const { tours, perimeters } = computeCoverageTours(
+    const { tours, perimeters, trips: tripsMap } = computeCoverageTours(
       positionedMowers, state.cells, state.space.width, state.space.height,
       state.config.mowThreshold, stationMap,
     );
@@ -383,6 +425,15 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       coverageTiles: tours.get(m.id) ?? [],
       tourIndex: 0,
       perimeterEdges: perimeters.get(m.id) ?? [],
+      trips: tripsMap?.get(m.id) ?? [],
+      tripIndex: 0,
+      schedule: m.schedule ?? {
+        mode: state.config.scheduleMode,
+        intervalMs: state.config.scheduleIntervalMs,
+        thresholdPct: state.config.scheduleThresholdPct,
+        hour: state.config.scheduleHour,
+        minute: state.config.scheduleMinute,
+      },
     }));
 
     set({ mowers, fleetInitialized: true, dirty: true, version: get().version + 1 });
@@ -433,6 +484,14 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     const drainPerCell = state.config.batteryDrainPerSecond / MOWER_SPEED_CELLS_PER_SECOND;
     const speed = MOWER_SPEED_CELLS_PER_SECOND;
 
+    // Collision avoidance: track occupied tiles
+    const occupiedTiles = new Set<string>();
+    for (const m of mowers) {
+      if (m.status === "operating" || m.status === "returning") {
+        occupiedTiles.add(`${m.x},${m.y}`);
+      }
+    }
+
     for (const mower of mowers) {
       if (mower.status === "faulted") continue;
       const coverageTiles = mower.coverageTiles ?? [];
@@ -460,6 +519,15 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
               mower.moveT = 1; mower.fromX = mower.x; mower.fromY = mower.y;
               dirty = true; continue;
             }
+            // Check schedule before restarting
+            const scheduleMode = mower.schedule?.mode ?? state.config.scheduleMode;
+            const lastRun = mower.schedule?.lastScheduledRun;
+            if (!shouldOperate(scheduleMode, state.config, newTimeMs, updatedCells, coverageTiles, lastRun)) {
+              mower.moveT = 1; mower.fromX = mower.x; mower.fromY = mower.y;
+              dirty = true; continue;
+            }
+            // Reset trip index when restarting from full charge
+            mower.tripIndex = 0;
             // Restart tour from beginning (grass regrew on earlier tiles)
             mower.tourIndex = 0;
             mower.status = "operating";
@@ -482,12 +550,27 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
         dirty = true; continue;
       }
 
-      // ── Operating: check if battery can complete the REMAINING tour ─
+      // ── Operating: check if battery can complete the REMAINING trip ─
       if (mower.status === "operating" && assignedStation) {
-        const remainingDrain = estimateTourDrain(mower.x, mower.y, coverageTiles, tourIdx, drainPerCell);
+        const trips = mower.trips ?? [];
+        const currentTripIdx = mower.tripIndex ?? 0;
+        // Use current trip's tiles for battery estimate, not full coverageTiles
+        let tripTiles = coverageTiles;
+        if (trips.length > 0 && currentTripIdx < trips.length) {
+          tripTiles = trips[currentTripIdx].tiles;
+        }
+        // Find which tiles in the trip are still ahead (not yet mowed)
+        const tripTileSet = new Set(tripTiles.map((t) => `${t.x},${t.y}`));
+        const remainingTiles: PathPoint[] = [];
+        for (let i = tourIdx; i < coverageTiles.length; i++) {
+          if (tripTileSet.has(`${coverageTiles[i].x},${coverageTiles[i].y}`)) {
+            remainingTiles.push(coverageTiles[i]);
+          }
+        }
+        const remainingDrain = estimateTourDrain(mower.x, mower.y, remainingTiles, 0, drainPerCell);
         const returnDrain = (Math.abs(mower.x - assignedStation.x) + Math.abs(mower.y - assignedStation.y)) * drainPerCell * 1.2 + 5;
         if (mower.battery <= remainingDrain + returnDrain) {
-          // Can't complete tour — return to station
+          // Can't complete trip — return to station
           mower.status = "returning";
           mower.path = findPath(mower.x, mower.y, assignedStation.x, assignedStation.y, updatedCells, space.width, space.height);
           mower.pathIndex = 0; mower.fromX = mower.x; mower.fromY = mower.y; mower.moveT = 0;
@@ -499,26 +582,89 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       const needsNewPath = mower.path.length === 0 || mower.pathIndex >= mower.path.length;
       if (needsNewPath) {
         if (mower.status === "operating") {
-          // Find next mowable tile from tour
+          const coverageTiles = mower.coverageTiles ?? [];
+          const trips = mower.trips ?? [];
+          const currentTripIdx = mower.tripIndex ?? 0;
+
+          // Multi-trip: get current trip's tiles
+          let candidateTiles: PathPoint[];
+          if (trips.length > 0 && currentTripIdx < trips.length) {
+            candidateTiles = trips[currentTripIdx].tiles;
+          } else {
+            candidateTiles = coverageTiles;
+          }
+
+          // Dynamic prioritization: find tile with highest estimated height
+          const now = Date.now();
           let nextTarget: PathPoint | null = null;
-          let targetIdx = tourIdx;
+          let targetIdx = -1;
+          let bestHeight = -1;
+          let bestDist = Infinity;
+
           for (let i = tourIdx; i < coverageTiles.length; i++) {
             const t = coverageTiles[i];
             const c = updatedCells.get(`${t.x},${t.y}`);
-            if (c && c.type === "grass" && (c.grassHeight ?? 0) >= state.config.mowThreshold) {
-              nextTarget = t; targetIdx = i; break;
+            if (c && c.type === "grass") {
+              // Check if this tile is in current trip
+              if (trips.length > 0 && currentTripIdx < trips.length) {
+                const inTrip = trips[currentTripIdx].tiles.some((tt) => tt.x === t.x && tt.y === t.y);
+                if (!inTrip) continue;
+              }
+              // Estimate height from lastMowed
+              const elapsed = (now - c.lastMowed) / 1000;
+              const estimated = Math.min(100, (elapsed * state.config.grassGrowthRatePerSecond * 100));
+              if (estimated >= state.config.mowThreshold) {
+                // Prefer highest grass, then nearest if tie
+                const dist = Math.abs(t.x - mower.x) + Math.abs(t.y - mower.y);
+                if (estimated > bestHeight || (estimated === bestHeight && dist < bestDist)) {
+                  bestHeight = estimated;
+                  bestDist = dist;
+                  nextTarget = t;
+                  targetIdx = i;
+                }
+              }
             }
           }
 
           if (nextTarget) {
+            // Collision avoidance: skip if target is occupied
+            const tKey = `${nextTarget.x},${nextTarget.y}`;
+            if (occupiedTiles.has(tKey)) {
+              // Try next available tile
+              for (let i = tourIdx; i < coverageTiles.length; i++) {
+                const t = coverageTiles[i];
+                const tk = `${t.x},${t.y}`;
+                if (!occupiedTiles.has(tk)) {
+                  const c = updatedCells.get(tk);
+                  if (c && c.type === "grass") {
+                    const elapsed = (now - c.lastMowed) / 1000;
+                    const estimated = Math.min(100, (elapsed * state.config.grassGrowthRatePerSecond * 100));
+                    if (estimated >= state.config.mowThreshold) {
+                      nextTarget = t;
+                      targetIdx = i;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+
             mower.path = findPath(mower.x, mower.y, nextTarget.x, nextTarget.y, updatedCells, space.width, space.height);
             mower.pathIndex = 0; mower.fromX = mower.x; mower.fromY = mower.y; mower.moveT = 0;
-            // Update tourIndex to this target's position
             mower.tourIndex = targetIdx;
             if (mower.path.length === 0) continue;
           } else {
-            // No more mowable tiles — return to station
-            if (assignedStation) {
+            // No more mowable tiles in current trip
+            if (trips.length > 0 && currentTripIdx < trips.length) {
+              // Multi-trip: return to station, then advance trip
+              mower.tripIndex = currentTripIdx + 1;
+              mower.tourIndex = 0;
+              if (assignedStation) {
+                mower.status = "returning";
+                mower.path = findPath(mower.x, mower.y, assignedStation.x, assignedStation.y, updatedCells, space.width, space.height);
+                mower.pathIndex = 0; mower.fromX = mower.x; mower.fromY = mower.y; mower.moveT = 0;
+              }
+            } else if (assignedStation) {
               mower.status = "returning";
               mower.path = findPath(mower.x, mower.y, assignedStation.x, assignedStation.y, updatedCells, space.width, space.height);
               mower.pathIndex = 0; mower.fromX = mower.x; mower.fromY = mower.y; mower.moveT = 0;
@@ -529,7 +675,16 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
             dirty = true;
           }
         } else if (mower.status === "idle" && assignedStation) {
-          mower.status = "operating"; dirty = true; continue;
+          // Check schedule before transitioning to operating
+          const scheduleMode = mower.schedule?.mode ?? state.config.scheduleMode;
+          const lastRun = mower.schedule?.lastScheduledRun;
+          if (shouldOperate(scheduleMode, state.config, newTimeMs, updatedCells, coverageTiles, lastRun)) {
+            mower.status = "operating";
+            mower.tourIndex = 0;
+            if (mower.schedule) mower.schedule.lastScheduledRun = newTimeMs;
+            dirty = true;
+          }
+          continue;
         }
       }
 
@@ -563,8 +718,10 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
 
             const newCell = updatedCells.get(`${mower.x},${mower.y}`);
             const isMowing = mower.status === "operating" && newCell?.type === "grass";
+            // Drain per tile = drainPerSecond / speed * multiplier (constant, independent of dt)
+            const drainPerTile = (state.config.batteryDrainPerSecond / speed) * (isMowing ? BATTERY_MOWING_MULTIPLIER : BATTERY_TRANSIT_MULTIPLIER);
             mower.battery = clamp(
-              mower.battery - state.config.batteryDrainPerSecond * dtSeconds * state.timeMultiplier * (isMowing ? BATTERY_MOWING_MULTIPLIER : BATTERY_TRANSIT_MULTIPLIER),
+              mower.battery - drainPerTile,
               0, state.config.batteryCapacity,
             );
 

@@ -15,6 +15,11 @@ export const DEFAULT_PROJECT_CONFIG = {
   chargingRatePerSecond: 3,
   timeMultiplier: 1,
   mowThreshold: 30,
+  scheduleMode: "auto" as const,
+  scheduleIntervalMs: 5 * 60 * 1000,
+  scheduleThresholdPct: 50,
+  scheduleHour: 6,
+  scheduleMinute: 0,
 } as const;
 
 export const TERRAIN_RESISTANCE: Record<CellType, number> = {

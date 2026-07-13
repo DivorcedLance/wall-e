@@ -41,6 +41,7 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 ### 2.3 Podadoras
 - [x] Spawn de podadoras (herramienta mower)
 - [x] Asignación 1:1 podadora ↔ estación (sorted position matching)
+- [x] Asignación manual de estación por podadora (dropdown en card)
 - [x] Colores por podadora (MOWER_PALETTE de 6 colores)
 - [x] Estados: idle, operating, charging, returning, faulted
 - [x] Movimiento suave con interpolación (lerp)
@@ -50,6 +51,14 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 - [x] Corte de césped al pasar
 - [x] Comando manual a podadora (click derecho en modo comando)
 - [x] Centrar cámara en podadora
+- [x] Indicadores visuales en canvas:
+  - Punto de estado (colored dot por state)
+  - Lámina animada (spinning tween) cuando podando
+  - Lámina estática cuando no poda
+  - Halo de tránsito (ring gris cuando blades off)
+  - Indicador de selección (doble anillo dorado)
+  - Cambio de color por estado (returning=azul real, charging=azul claro, faulted=rojo)
+- [x] Ruta activa de movimiento (glow layer + waypoints + marcador destino)
 
 ### 2.4 Simulación
 - [x] Crecimiento de césped exponencial (slider logarítmico 0.01–100 %/s)
@@ -71,6 +80,7 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 - [x] "Recalcular ruta" (selected mower) y "Recalcular todas las rutas" (all mowers, reordena tiles existentes)
 - [x] "Recalcular estrategia" (reinicia Voronoi completo con initFleet)
 - [x] Exportar estrategia (clipboard)
+- [x] Programación de podadora (UI panel con 4 modos: auto, intervalo, umbral, hora del día) — solo UI, no conectado a simulación
 
 ### 2.6 Pathfinding
 - [x] A* con costos por terreno: grass=1.0, path=1.2, gravel=1.15, sand=1.5
@@ -87,8 +97,15 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 - [x] Click derecho en herramientas → copia tipo de tile al tool activo
 - [x] Click derecho en strategy editor → selecciona podadora dueña del tile
 - [x] Bloqueo de menú contextual del navegador en canvas
+- [x] API de debug `window.__walle` (forceReturn, drainBattery)
+- [x] Botón "Forzar retorno" en sidebar
 
-### 2.9 UI/UX
+### 2.9 Persistencia de Datos
+- [x] Export JSON completo del espacio (descarga archivo .json)
+- [x] `lastMowed` timestamp por celda
+- [x] SimulationEvent tipo + IndexedDB CRUD
+
+### 2.10 UI/UX
 - [x] Header contextual (breadcrumb Cliente > Proyecto > Espacio)
 - [x] Indicador "sin guardar"
 - [x] Botón Guardar con estado "Guardando..."
@@ -96,8 +113,9 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 - [x] TimeControls con play/pause, speed selector, reloj simulado
 - [x] CameraControls con zoom +/− y centrar
 - [x] Componentes shadcn-style: Button, Card, Slider, Switch, Select, Tooltip, Badge, Collapsible, Separator, Input, Label
+- [x] Sistema de tiers de cliente (ClientTier: base/standard/premium con UI)
 
-### 2.10 Demos (13)
+### 2.11 Demos (13)
 | ID | Nombre | Tamaño | Podadoras |
 |---|---|---|---|
 | starter | Campo Abierto | 20×20 | 2 |
@@ -120,7 +138,6 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 
 ### Fase A: Pulido de Interfaz Gráfica
 - [ ] Animaciones de transición en sidebar (abrir/cerrar panels)
-- [ ] Indicadores visuales de estado de podadora en canvas (batería, estado)
 - [ ] Mini-mapa de overview en esquina del editor
 - [ ] Highlight visual de tiles seleccionados en strategy editor
 - [ ] Feedback visual al copiar tile con click derecho (flash/tooltip)
@@ -141,31 +158,32 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 - [ ] IndexedDB: compaction de datos obsoletos
 - [ ] Debounce de markDirty para evitar re-renders excesivos
 
-### Fase C: Modelos de Estrategia y Cálculo de Rutas
-- [ ] Algoritmos de distribución alternativos:
-  - [ ] Balanceo por área (no solo por cantidad de tiles)
-  - [ ] Zonas compactas (minimizar perímetro compartido)
-  - [ ] Distribución por carga de trabajo (tiles × frecuencia de corte)
-- [ ] Rutas optimizadas:
-  - [ ] TSP (Travelling Salesman Problem) con heurísticas
-  - [ ] Rusticación de rutas (evitar zigzag innecesario)
-  - [ ] Rutas que respetan dirección de corte (bandejas)
-- [ ] Multi-trip: dividir tours largos en viajes con retorno a estación
-- [ ] Priorización dinámica: podar césped más alto primero
-- [ ] Evitación de colisiones entre podadoras
-- [ ] Rutas que minimizan transito por caminos (ahorro de batería)
-- [ ] Configuración de turnos de podadora (horarios por día)
-- [ ] Modo de poda circular (espiral desde estación)
-- [ ] Integración de obstáculos temporales (podadora averiada bloquea tile)
+### Fase C: Modelos de Estrategia y Cálculo de Rutas [ACTIVA]
+- [ ] **C.1** Conectar programación de podadora (4 modos UI) al tick de simulación
+- [ ] **C.2** Algoritmos de distribución alternativos:
+  - [ ] C.2a Balanceo por área (no solo cantidad de tiles)
+  - [ ] C.2b Zonas compactas (minimizar perímetro compartido)
+  - [ ] C.2c Distribución por carga de trabajo (tiles × frecuencia de corte)
+- [ ] **C.3** Rutas optimizadas:
+  - [ ] C.3a TSP con heurísticas (nearest-neighbor + 2-opt improvement)
+  - [ ] C.3b Rusticación de rutas (evitar zigzag innecesario)
+  - [ ] C.3c Rutas que respetan dirección de corte (bandejas/líneas paralelas)
+- [ ] **C.4** Multi-trip: dividir tours largos en viajes con retorno a estación cuando batería < 30%
+- [ ] **C.5** Priorización dinámica: podar tiles con césped más alto primero
+- [ ] **C.6** Evitación de colisiones entre podadoras (tiles adyacentes no simultáneos)
+- [ ] **C.7** Rutas que minimizan transito por caminos (ahorro de batería)
+- [ ] **C.8** Modo de poda circular (espiral desde estación)
+- [ ] **C.9** Obstáculos temporales (podadora averiada bloquea tile)
 
 ### Fase D: Funcionalidad Avanzada
 - [ ] Undo/Redo con historial
 - [ ] Copy/Paste de selección de tiles
-- [ ] Import/Export de estrategias (JSON)
+- [ ] Import de espacios JSON
 - [ ] Simulación de escenarios (what-if)
 - [ ] Estadísticas de cobertura y eficiencia
-- [ ] Alertas de batería baja y fallos
-- [ ] Log de eventos de simulación
+- [ ] Log visual de eventos de simulación
+- [ ] Alertas visuales en canvas (batería baja, fault)
+- [ ] Calculadora de precios para cliente
 - [ ] Modo presentación (solo visualización, sin edición)
 
 ---
@@ -174,11 +192,11 @@ Editor 100% offline para crear, editar y simular espacios verdes con flotas de p
 
 ### Jerarquía de Datos
 ```
-Cliente → Proyecto (config) → Espacio (mapa)
+Cliente (tier) → Proyecto (config) → Espacio (mapa)
   ├── grid isométrico
-  ├── celdas (CellData[])
+  ├── celdas (CellData[] con lastMowed)
   ├── césped (grassHeights)
-  ├── podadoras (Mower[] con coverageTiles, perimeterEdges, tourIndex)
+  ├── podadoras (Mower[] con coverageTiles, perimeterEdges, tourIndex, schedule)
   ├── estaciones (ChargingStation[])
   └── eventos (SimulationEvent[])
 ```
@@ -195,17 +213,24 @@ src/
 │   ├── fleet.ts          # assignStationsToMowers, computeCoverageTours
 │   ├── pathfinding.ts    # A* con costos por terreno
 │   ├── demos.ts          # 13 definiciones de demo
+│   ├── export.ts         # exportSpaceToJson
 │   ├── db/indexedDB.ts   # CRUD con batch operations
 │   └── store/
 │       ├── simulationStore.ts  # Estado de simulación + saveSpace
 │       ├── editorStore.ts      # Estado de edición
 │       └── contextStore.ts     # Contexto activo
 ├── components/game/
-│   ├── IsometricScene.ts       # Phaser scene (input, rendering)
+│   ├── IsometricScene.ts       # Phaser scene (input, rendering, mower visuals)
 │   ├── Sidebar.tsx             # Panels de herramientas/estrategia/settings
 │   ├── TimeControls.tsx        # Play/pause + speed + reloj
-│   └── ContextHeader.tsx       # Breadcrumb + guardar
+│   └── ContextHeader.tsx       # Breadcrumb + guardar + export
 ```
+
+### Constantes No Usadas (candidatas a integrar)
+- `BATTERY_RETURN_SAFETY_MARGIN` (5)
+- `LOW_BATTERY_THRESHOLD` (25)
+- `GRASS_HEIGHT_THRESHOLD` (30)
+- `PATH_RETURN_COLOR` / `PATH_OPERATING_COLOR`
 
 ---
 

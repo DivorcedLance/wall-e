@@ -82,7 +82,7 @@ export const DEMOS: DemoDefinition[] = [
   {
     id: "starter",
     name: "Campo Abierto",
-    description: "20×20 — Jardín amplio con una estación y dos podadoras. Ideal para empezar.",
+    description: "20×20 — Jardín amplio con una estación y una podadora. Ideal para empezar.",
     emoji: "leaf",
     width: 20,
     height: 20,
@@ -110,10 +110,9 @@ export const DEMOS: DemoDefinition[] = [
       return {
         cells,
         mowers: [
-          { x: 3, y: 3, tier: "standard" },
-          { x: 16, y: 16, tier: "standard" },
+          { x: 10, y: 10, tier: "standard" },
         ],
-        stations: [{ x: 1, y: 1 }, { x: 18, y: 18 }],
+        stations: [{ x: 1, y: 1 }],
       };
     },
   },
@@ -134,8 +133,7 @@ export const DEMOS: DemoDefinition[] = [
       cells.push(...treeCluster(13, 13, 3));
       cells.push(...treeCluster(2, 13, 2));
       cells.push(...treeCluster(13, 2, 2));
-      cells.push(...rect(7, 8, 10, 9, "flowers", 0));
-      cells.push(...rect(8, 7, 9, 10, "flowers", 0));
+      cells.push(...rect(7, 7, 10, 10, "flowers", 0));
       const reserved: Array<{ x: number; y: number }> = [];
       for (let y = 0; y < 18; y++) {
         reserved.push({ x: 0, y });
@@ -150,7 +148,7 @@ export const DEMOS: DemoDefinition[] = [
       for (let y = 13; y < 16; y++) for (let x = 13; x < 16; x++) reserved.push({ x, y });
       for (let y = 13; y < 15; y++) for (let x = 2; x < 4; x++) reserved.push({ x, y });
       for (let y = 2; y < 4; y++) for (let x = 13; x < 15; x++) reserved.push({ x, y });
-      for (let y = 7; y < 11; y++) for (let x = 7; x < 11; x++) reserved.push({ x, y });
+      for (let y = 7; y <= 10; y++) for (let x = 7; x <= 10; x++) reserved.push({ x, y });
       cells.push(...fillGrass(18, 18, 55, 30, reserved));
       return {
         cells,
@@ -165,7 +163,7 @@ export const DEMOS: DemoDefinition[] = [
   {
     id: "maze",
     name: "Laberinto Verde",
-    description: "22×22 — Caminos en zigzag, obstáculos de agua y grava, 3 podadoras.",
+    description: "22×22 — Caminos en zigzag, obstáculos de agua y grava, 2 podadoras.",
     emoji: "route",
     width: 22,
     height: 22,
@@ -207,10 +205,9 @@ export const DEMOS: DemoDefinition[] = [
         cells,
         mowers: [
           { x: 2, y: 2, tier: "standard" },
-          { x: 19, y: 2, tier: "standard" },
-          { x: 10, y: 8, tier: "premium" },
+          { x: 19, y: 19, tier: "standard" },
         ],
-        stations: [{ x: 1, y: 1 }, { x: 20, y: 20 }, { x: 9, y: 1 }],
+        stations: [{ x: 1, y: 1 }, { x: 20, y: 20 }],
       };
     },
   },
@@ -233,7 +230,6 @@ export const DEMOS: DemoDefinition[] = [
       // Pond (water) in SE
       for (let y = 18; y < 23; y++) {
         for (let x = 16; x < 23; x++) {
-          if ((x === 16 && y === 18) || (x === 22 && y === 22)) continue;
           cells.push({ x, y, type: "water" });
         }
       }
@@ -268,10 +264,9 @@ export const DEMOS: DemoDefinition[] = [
         cells,
         mowers: [
           { x: 8, y: 7, tier: "standard" },
-          { x: 18, y: 16, tier: "premium" },
-          { x: 8, y: 13, tier: "standard" },
+          { x: 18, y: 16, tier: "standard" },
         ],
-        stations: [{ x: 1, y: 1 }, { x: 23, y: 23 }, { x: 8, y: 1 }],
+        stations: [{ x: 1, y: 1 }, { x: 23, y: 23 }],
       };
     },
   },
@@ -308,7 +303,7 @@ export const DEMOS: DemoDefinition[] = [
   {
     id: "campus",
     name: "Campus Universitario",
-    description: "40×40 — Gran campus con edificios, caminos, jardines, estanque y 5 podadoras. Escenario completo.",
+    description: "40×40 — Gran campus con edificios, caminos, jardines, estanque y 4 podadoras. Escenario completo.",
     emoji: "building",
     width: 40,
     height: 40,
@@ -398,17 +393,16 @@ export const DEMOS: DemoDefinition[] = [
           { x: 9, y: 6, tier: "standard" },
           { x: 28, y: 6, tier: "standard" },
           { x: 9, y: 33, tier: "standard" },
-          { x: 28, y: 33, tier: "premium" },
-          { x: 18, y: 18, tier: "premium" },
+          { x: 28, y: 33, tier: "standard" },
         ],
-        stations: [{ x: 1, y: 1 }, { x: 38, y: 1 }, { x: 1, y: 38 }, { x: 38, y: 38 }, { x: 19, y: 1 }],
+        stations: [{ x: 1, y: 1 }, { x: 38, y: 1 }, { x: 1, y: 38 }, { x: 38, y: 38 }],
       };
     },
   },
   {
     id: "estates",
     name: "Residencial Premium",
-    description: "35×35 — 6 casas, caminos, piscina, jardín ornamental y 4 podadoras premium.",
+    description: "35×35 — 6 casas, caminos, piscina, jardín ornamental y 3 podadoras premium.",
     emoji: "trees",
     width: 35,
     height: 35,
@@ -491,19 +485,18 @@ export const DEMOS: DemoDefinition[] = [
       return {
         cells,
         mowers: [
-          { x: 1, y: 8, tier: "premium" },
-          { x: 33, y: 8, tier: "premium" },
-          { x: 1, y: 26, tier: "premium" },
-          { x: 33, y: 26, tier: "premium" },
+          { x: 1, y: 8, tier: "standard" },
+          { x: 33, y: 8, tier: "standard" },
+          { x: 17, y: 26, tier: "standard" },
         ],
-        stations: [{ x: 1, y: 1 }, { x: 33, y: 1 }, { x: 1, y: 33 }, { x: 33, y: 33 }],
+        stations: [{ x: 1, y: 1 }, { x: 33, y: 1 }, { x: 17, y: 33 }],
       };
     },
   },
   {
     id: "park",
     name: "Parque Natural",
-    description: "45×45 — Gran parque con bosques densos, caminos serpenteantes, lago y 6 podadoras.",
+    description: "45×45 — Gran parque con bosques densos, caminos serpenteantes, lago y 4 podadoras.",
     emoji: "leaf",
     width: 45,
     height: 45,
@@ -567,13 +560,10 @@ export const DEMOS: DemoDefinition[] = [
           { x: 42, y: 2, tier: "standard" },
           { x: 2, y: 42, tier: "standard" },
           { x: 42, y: 42, tier: "standard" },
-          { x: 2, y: 22, tier: "standard" },
-          { x: 42, y: 22, tier: "standard" },
         ],
         stations: [
           { x: 1, y: 1 }, { x: 43, y: 1 },
           { x: 1, y: 43 }, { x: 43, y: 43 },
-          { x: 1, y: 22 }, { x: 43, y: 22 },
         ],
       };
     },
@@ -642,7 +632,7 @@ export const DEMOS: DemoDefinition[] = [
   {
     id: "industrial",
     name: "Zona Industrial",
-    description: "30×30 — Naves industriales, grava, maquinaria y camiones. 3 podadoras.",
+    description: "30×30 — Naves industriales, grava, maquinaria y camiones. 2 podadoras.",
     emoji: "building",
     width: 30,
     height: 30,
@@ -706,16 +696,15 @@ export const DEMOS: DemoDefinition[] = [
         mowers: [
           { x: 10, y: 7, tier: "standard" },
           { x: 10, y: 21, tier: "standard" },
-          { x: 25, y: 14, tier: "premium" },
         ],
-        stations: [{ x: 1, y: 1 }, { x: 1, y: 28 }, { x: 28, y: 14 }],
+        stations: [{ x: 1, y: 1 }, { x: 1, y: 28 }],
       };
     },
   },
   {
     id: "urban",
     name: "Parque Urbano",
-    description: "28×28 — Banco, fuentes, senderos serpenteantes y césped. 3 podadoras.",
+    description: "28×28 — Banco, fuentes, senderos serpenteantes y césped. 2 podadoras.",
     emoji: "trees",
     width: 28,
     height: 28,
@@ -777,17 +766,16 @@ export const DEMOS: DemoDefinition[] = [
         cells,
         mowers: [
           { x: 5, y: 4, tier: "standard" },
-          { x: 22, y: 4, tier: "standard" },
-          { x: 14, y: 22, tier: "standard" },
+          { x: 22, y: 22, tier: "standard" },
         ],
-        stations: [{ x: 1, y: 1 }, { x: 26, y: 1 }, { x: 14, y: 26 }],
+        stations: [{ x: 1, y: 1 }, { x: 26, y: 26 }],
       };
     },
   },
   {
     id: "farm",
     name: "Finca Orgánica",
-    description: "35×35 — Cultivos en hileras, granero, estanque de riego y 4 podadoras.",
+    description: "35×35 — Cultivos en hileras, granero, estanque de riego y 3 podadoras.",
     emoji: "leaf",
     width: 35,
     height: 35,
@@ -859,12 +847,11 @@ export const DEMOS: DemoDefinition[] = [
         mowers: [
           { x: 4, y: 10, tier: "standard" },
           { x: 30, y: 10, tier: "standard" },
-          { x: 4, y: 24, tier: "standard" },
-          { x: 30, y: 24, tier: "standard" },
+          { x: 17, y: 24, tier: "standard" },
         ],
         stations: [
           { x: 1, y: 1 }, { x: 33, y: 1 },
-          { x: 1, y: 33 }, { x: 33, y: 33 },
+          { x: 17, y: 33 },
         ],
       };
     },
@@ -872,7 +859,7 @@ export const DEMOS: DemoDefinition[] = [
   {
     id: "sports",
     name: "Complejo Deportivo",
-    description: "32×32 — Canchas, pistas de atletismo, gradas y zonas verdes. 4 podadoras.",
+    description: "32×32 — Canchas, pistas de atletismo, gradas y zonas verdes. 3 podadoras.",
     emoji: "route",
     width: 32,
     height: 32,
@@ -898,7 +885,7 @@ export const DEMOS: DemoDefinition[] = [
       cells.push(...rect(17, 2, 17, 13, "path"));
       cells.push(...rect(29, 2, 29, 13, "path"));
       // Running track (bottom-left) - oval shape
-      for (let y = 2; y < 13; y++) {
+      for (let y = 1; y < 13; y++) {
         cells.push({ x: 2, y: y + 17, type: "gravel" });
         cells.push({ x: 13, y: y + 17, type: "gravel" });
       }
@@ -938,11 +925,10 @@ export const DEMOS: DemoDefinition[] = [
           { x: 7, y: 7, tier: "standard" },
           { x: 23, y: 7, tier: "standard" },
           { x: 7, y: 23, tier: "standard" },
-          { x: 23, y: 23, tier: "premium" },
         ],
         stations: [
           { x: 1, y: 1 }, { x: 30, y: 1 },
-          { x: 1, y: 30 }, { x: 30, y: 30 },
+          { x: 1, y: 30 },
         ],
       };
     },

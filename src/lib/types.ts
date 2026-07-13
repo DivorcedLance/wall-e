@@ -7,6 +7,8 @@ export interface Client {
   createdAt: number;
 }
 
+export type ScheduleMode = "auto" | "interval" | "threshold" | "time_of_day";
+
 export interface ProjectConfig {
   grassGrowthRatePerSecond: number;
   batteryDrainPerSecond: number;
@@ -14,6 +16,11 @@ export interface ProjectConfig {
   chargingRatePerSecond: number;
   timeMultiplier: number;
   mowThreshold: number;
+  scheduleMode: ScheduleMode;
+  scheduleIntervalMs: number;
+  scheduleThresholdPct: number;
+  scheduleHour: number;
+  scheduleMinute: number;
 }
 
 export interface Project {
@@ -68,6 +75,8 @@ export interface PathPoint {
   y: number;
 }
 
+export type Trip = { tiles: PathPoint[]; returnToStation: boolean };
+
 export interface Zone {
   startX: number;
   startY: number;
@@ -95,6 +104,16 @@ export interface Mower {
   tourIndex?: number;
   color?: number;
   perimeterEdges?: Array<{ x1: number; y1: number; x2: number; y2: number }>;
+  trips?: Trip[];
+  tripIndex?: number;
+  schedule?: {
+    mode: ScheduleMode;
+    intervalMs?: number;
+    thresholdPct?: number;
+    hour?: number;
+    minute?: number;
+    lastScheduledRun?: number;
+  };
 }
 
 export interface ChargingStation {
