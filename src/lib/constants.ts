@@ -9,12 +9,12 @@ export const MIN_GRID = 5;
 export const MAX_GRID = 100;
 
 export const DEFAULT_PROJECT_CONFIG = {
-  grassGrowthRatePerSecond: 0.1,
-  batteryDrainPerSecond: 0.5,
+  grassGrowthRatePerSecond: 0.110,
+  batteryDrainPerSecond: 1,
   batteryCapacity: 100,
-  chargingRatePerSecond: 3,
+  chargingRatePerSecond: 0.8,
   timeMultiplier: 1,
-  mowThreshold: 60,
+  mowThreshold: 80,
   scheduleMode: "auto" as const,
   scheduleIntervalMs: 5 * 60 * 1000,
   scheduleThresholdPct: 50,
