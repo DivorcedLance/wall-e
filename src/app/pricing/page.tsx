@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bot, Crown, Check, ArrowRight, Sun, Moon } from "lucide-react";
+import { Crown, Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useTheme } from "@/components/ThemeProvider";
+import LandingLayout from "@/components/LandingPage";
 import { useContextStore } from "@/lib/store/contextStore";
 import { useSimulationStore } from "@/lib/store/simulationStore";
 import { DEMOS } from "@/lib/demos";
@@ -35,7 +35,6 @@ function getUniqueName(existing: string[], prefix: string): string {
 export default function PricingPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
-  const { theme, toggle } = useTheme();
   const clients = useContextStore((s) => s.clients);
   const projects = useContextStore((s) => s.projects);
   const createClient = useContextStore((s) => s.createClient);
@@ -59,12 +58,9 @@ export default function PricingPage() {
       const project = await createProject(client.id, projectName);
       setActiveProject(project.id);
 
-      // Find matching demo
       const demo = DEMOS.find((d) => d.id === plan.demoId) ?? DEMOS[0];
       const layout = demo.build();
 
-      const { SpaceSelector } = await import("@/components/context-selector/SpaceSelector");
-      // Use direct DB writes
       const { db } = await import("@/lib/db/indexedDB");
       const { generateId } = await import("@/lib/utils");
       const { assignStationsToMowers, computeCoverageTours } = await import("@/lib/fleet");
@@ -83,7 +79,6 @@ export default function PricingPage() {
       };
       await db.putSpace(space);
 
-      // Save cells
       const stationKeys = new Set(layout.stations.map((s) => `${s.x},${s.y}`));
       const cellEntries = layout.cells.map((c) => {
         const key = `${c.x},${c.y}`;
@@ -96,7 +91,6 @@ export default function PricingPage() {
       }
       await db.putMapCells(spaceId, cellEntries);
 
-      // Save mowers and stations
       const mowers = layout.mowers.map((m, i) => ({
         id: generateId(), spaceId, name: `Podadora ${i + 1}`,
         x: m.x, y: m.y, fromX: m.x, fromY: m.y, moveT: 1,
@@ -122,7 +116,6 @@ export default function PricingPage() {
       for (const mower of enrichedMowers) await db.putMower(mower);
       for (const station of stations) await db.putStation(station);
 
-      // Load and navigate
       await loadSpace(space, project.config);
       router.push("/editor");
     } catch (err) {
@@ -132,38 +125,19 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-surface sticky top-0 z-40">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2 text-lg font-bold">
-            <Bot className="h-5 w-5 text-primary" />
-            W.A.L.L.-E.
-          </Link>
-          <nav className="flex items-center gap-4 text-sm text-muted-foreground">
-            <Link href="/about" className="hover:text-foreground">Acerca de</Link>
-            <Link href="/pricing" className="hover:text-foreground">Precios</Link>
-            <Link href="/contact" className="hover:text-foreground">Contacto</Link>
-            <button onClick={toggle} className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted transition-colors" title={theme === "dark" ? "Modo claro" : "Modo oscuro"}>
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-            <Link href="/simulador" className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
-              Abrir Editor <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </nav>
-        </div>
-      </header>
-      <main className="mx-auto max-w-5xl px-6 py-12">
+    <LandingLayout>
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Planes y Precios</h1>
-          <p className="mt-3 text-lg text-muted-foreground">
+          <h1 className="text-3xl sm:text-4xl font-bold">Planes y Precios</h1>
+          <p className="mt-3 text-base sm:text-lg text-muted-foreground">
             Elige el plan que se adapte a tu flota. Todos incluyen 14 días de prueba gratuita.
           </p>
         </div>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 sm:mt-12 grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan) => (
             <div
               key={plan.tier}
-              className={`relative flex flex-col rounded-lg border bg-surface p-5 ${
+              className={`relative flex flex-col rounded-lg border bg-card p-5 ${
                 plan.popular ? "border-primary shadow-lg shadow-primary/10" : "border-border"
               }`}
             >
@@ -207,6 +181,6 @@ export default function PricingPage() {
           ))}
         </div>
       </main>
-    </div>
+    </LandingLayout>
   );
 }
