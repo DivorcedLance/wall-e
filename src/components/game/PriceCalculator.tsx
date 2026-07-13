@@ -13,22 +13,22 @@ import { TIER_CONFIGS } from "@/lib/types";
 import type { ClientTier, TierConfig } from "@/lib/types";
 
 const TILE_SIZE_M2 = 0.8; // 0.56m x 0.28m ≈ 0.16m² but with paths ≈ 0.8m² effective
-const ENERGY_COST_KWH = 0.15; // €/kWh
+const ENERGY_COST_KWH = 0.5; // S/. /kWh
 const MOWER_POWER_KW = 0.5;
 const CHARGING_EFFICIENCY = 0.9;
 const MOWER_SPEED_MS = 1.5; // m/s
 
 interface CostInputs {
-  fixedMonthly: number;      // €/mes coste fijo (software, soporte, mantenimiento)
-  variablePerM2: number;     // €/m² coste variable (energía, consumibles)
-  manualCostPerHour: number; // €/h coste manual (jardinero)
+  fixedMonthly: number;      // S/. /mes coste fijo (software, soporte, mantenimiento)
+  variablePerM2: number;     // S/. /m² coste variable (energía, consumibles)
+  manualCostPerHour: number; // S/. /h coste manual (jardinero)
   manualEfficiencyM2H: number; // m²/h eficiencia manual
 }
 
 const DEFAULT_INPUTS: CostInputs = {
-  fixedMonthly: 250,
-  variablePerM2: 0.02,
-  manualCostPerHour: 25,
+  fixedMonthly: 800,
+  variablePerM2: 0.07,
+  manualCostPerHour: 80,
   manualEfficiencyM2H: 200,
 };
 
@@ -102,7 +102,7 @@ export function PriceCalculator() {
         <CardTitle className="flex items-center gap-1.5 text-xs">
           <Crown className="h-3.5 w-3.5 text-accent" />
           <span>Plan {estimate.tierName}</span>
-          <span className="text-muted-foreground font-normal ml-auto">€{estimate.autoFixed}/mes</span>
+          <span className="text-muted-foreground font-normal ml-auto">S/. {estimate.autoFixed}/mes</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2 p-2.5 pt-0 max-h-[420px] overflow-y-auto scrollbar-thin">
@@ -110,7 +110,7 @@ export function PriceCalculator() {
         <div className="grid grid-cols-2 gap-1.5">
           <div className="space-y-0.5">
             <Label className="text-[9px] text-muted-foreground flex items-center gap-1">
-              Coste fijo €/mes
+              Coste fijo S/. /mes
               <Tooltip content="Software, soporte, mantenimiento preventivo">
                 <Info className="h-2.5 w-2.5" />
               </Tooltip>
@@ -124,7 +124,7 @@ export function PriceCalculator() {
           </div>
           <div className="space-y-0.5">
             <Label className="text-[9px] text-muted-foreground flex items-center gap-1">
-              Variable €/m²
+              Variable S/. /m²
               <Tooltip content="Energía + consumibles por m² mantenido">
                 <Info className="h-2.5 w-2.5" />
               </Tooltip>
@@ -138,7 +138,7 @@ export function PriceCalculator() {
             />
           </div>
           <div className="space-y-0.5">
-            <Label className="text-[9px] text-muted-foreground">Coste manual €/h</Label>
+            <Label className="text-[9px] text-muted-foreground">Coste manual S/. /h</Label>
             <Input
               type="number"
               value={inputs.manualCostPerHour}
@@ -164,15 +164,15 @@ export function PriceCalculator() {
           <span className="text-[10px] font-medium text-primary">Sistema Autónomo</span>
           <div className="flex justify-between font-mono text-[10px]">
             <span className="text-muted-foreground">Coste fijo</span>
-            <span>€{estimate.autoFixed}/mes</span>
+            <span>S/. {estimate.autoFixed}/mes</span>
           </div>
           <div className="flex justify-between font-mono text-[10px]">
             <span className="text-muted-foreground">Variable ({estimate.grassM2} m²)</span>
-            <span>€{estimate.autoVariable}/mes</span>
+            <span>S/. {estimate.autoVariable}/mes</span>
           </div>
           <div className="flex justify-between font-mono text-[10px] font-medium">
             <span className="text-primary">Total autónomo</span>
-            <span className="text-primary">€{estimate.autoTotal}/mes</span>
+            <span className="text-primary">S/. {estimate.autoTotal}/mes</span>
           </div>
         </div>
 
@@ -187,7 +187,7 @@ export function PriceCalculator() {
           </div>
           <div className="flex justify-between font-mono text-[10px] font-medium">
             <span className="text-muted-foreground">Total manual</span>
-            <span>€{estimate.manualTotal}/mes</span>
+            <span>S/. {estimate.manualTotal}/mes</span>
           </div>
         </div>
 
@@ -208,13 +208,13 @@ export function PriceCalculator() {
           <div className="flex justify-between font-mono text-[10px]">
             <span className="text-muted-foreground">Mensual</span>
             <span className={`font-bold ${estimate.isSaving ? "text-primary" : "text-destructive"}`}>
-              {estimate.isSaving ? "+" : ""}€{estimate.monthlySavings}/mes
+              {estimate.isSaving ? "+" : ""}S/. {estimate.monthlySavings}/mes
             </span>
           </div>
           <div className="flex justify-between font-mono text-[10px]">
             <span className="text-muted-foreground">Anual</span>
             <span className={`font-bold ${estimate.isSaving ? "text-primary" : "text-destructive"}`}>
-              {estimate.isSaving ? "+" : ""}€{estimate.yearlySavings}/año
+              {estimate.isSaving ? "+" : ""}S/. {estimate.yearlySavings}/año
             </span>
           </div>
           <div className="flex justify-between font-mono text-[10px]">

@@ -42,7 +42,7 @@ export function ConfigPanel({ config, onChange }: ConfigPanelProps) {
             <p className="text-xs font-medium text-foreground">Plan {tierConfig.label}</p>
             <p className="text-[10px] text-muted-foreground truncate">{tierConfig.description}</p>
           </div>
-          <span className="text-xs font-bold text-primary shrink-0">€{tierConfig.priceMonthly}/mes</span>
+          <span className="text-xs font-bold text-primary shrink-0">S/. {tierConfig.priceMonthly}/mes</span>
         </div>
       )}
 
@@ -65,7 +65,7 @@ export function ConfigPanel({ config, onChange }: ConfigPanelProps) {
                   )}
                 >
                   <span className="font-medium">{tc.label}</span>
-                  <span className="font-mono text-[9px]">{tc.priceMonthly > 0 ? `€${tc.priceMonthly}/mes` : "Custom"}</span>
+                  <span className="font-mono text-[9px]">{tc.priceMonthly > 0 ? `S/. ${tc.priceMonthly}/mes` : "Custom"}</span>
                 </button>
               );
             })}

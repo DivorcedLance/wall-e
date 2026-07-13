@@ -871,7 +871,7 @@ export function Sidebar() {
                   <>
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-medium">{tc.label}</span>
-                      <span className="text-[10px] font-mono text-primary font-bold">€{tc.priceMonthly}/mes</span>
+                      <span className="text-[10px] font-mono text-primary font-bold">S/. {tc.priceMonthly}/mes</span>
                     </div>
                     <p className="text-[10px] text-muted-foreground">{tc.description}</p>
                     <div className="grid grid-cols-2 gap-1 mt-1">
@@ -891,7 +891,7 @@ export function Sidebar() {
                             )}
                           >
                             <span className="font-medium block">{tConf.label}</span>
-                            <span className="font-mono text-[9px]">{tConf.priceMonthly > 0 ? `€${tConf.priceMonthly}` : "Custom"}</span>
+                            <span className="font-mono text-[9px]">{tConf.priceMonthly > 0 ? `S/. ${tConf.priceMonthly}` : "Custom"}</span>
                           </button>
                         );
                       })}
