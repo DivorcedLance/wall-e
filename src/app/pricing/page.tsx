@@ -20,10 +20,9 @@ const plans: Array<{
   demoId?: string;
   popular?: boolean;
 }> = [
-  { name: "Básico", price: 150, desc: "Para jardines pequeños y residencias.", features: ["Hasta 2 podadoras", "1 estación de carga", "Mapas hasta 20×20", "3 espacios guardados", "Soporte por email"], tier: "base", demoId: "small" },
-  { name: "Estándar", price: 350, desc: "Para comunidades y propiedades medianas.", features: ["Hasta 5 podadoras", "3 estaciones de carga", "Mapas hasta 35×35", "10 espacios guardados", "Soporte chat + email"], tier: "standard", demoId: "urban", popular: true },
-  { name: "Premium", price: 600, desc: "Para campus, parques y empresas.", features: ["Hasta 15 podadoras", "5 estaciones de carga", "Mapas hasta 60×60", "50 espacios guardados", "Soporte prioritario 24h"], tier: "premium", demoId: "campus" },
-  { name: "Enterprise", price: 0, desc: "Para operaciones a gran escala.", features: ["Podadoras ilimitadas", "Estaciones ilimitadas", "Mapas hasta 100×100", "Espacios ilimitados", "Soporte dedicado", "API de integración"], tier: "enterprise", demoId: "park" },
+  { name: "Servicio Base", price: 6000, desc: "1 módulo · Área básica / terreno simple.", features: ["~5,000 m² de cobertura", "1 módulo de control", "Podadoras básicas", "Soporte por email", "Actualizaciones incluidas"], tier: "base", demoId: "small" },
+  { name: "Servicio Estándar", price: 9500, desc: "2 módulos · Extensión media / complejidad intermedia.", features: ["~15,000 m² de cobertura", "2 módulos de control", "Multi-podadora", "Soporte chat + email", "Rutas optimizadas", "Simulación avanzada"], tier: "standard", demoId: "urban", popular: true },
+  { name: "Servicio Premium", price: 14000, desc: "4 módulos · Gran superficie / alta complejidad.", features: ["~40,000 m² de cobertura", "4 módulos de control", "Flota completa", "Soporte prioritario 24h", "API de integración", "Personalización total"], tier: "premium", demoId: "campus" },
 ];
 
 function getUniqueName(existing: string[], prefix: string): string {
@@ -133,7 +132,7 @@ export default function PricingPage() {
             Elige el plan que se adapte a tu flota. Todos incluyen 14 días de prueba gratuita.
           </p>
         </div>
-        <div className="mt-10 sm:mt-12 grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 sm:mt-12 grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
             <div
               key={plan.tier}
@@ -153,7 +152,7 @@ export default function PricingPage() {
               <p className="mt-1 text-sm text-muted-foreground">{plan.desc}</p>
               <div className="mt-4 min-h-[36px]">
                 {plan.price > 0 ? (
-                  <span className="text-3xl font-bold">€{plan.price}<span className="text-sm font-normal text-muted-foreground">/mes</span></span>
+                  <span className="text-3xl font-bold">S/. {plan.price.toLocaleString("es-PE")}<span className="text-sm font-normal text-muted-foreground">/mes</span></span>
                 ) : (
                   <span className="text-2xl font-bold text-muted-foreground">Personalizado</span>
                 )}
